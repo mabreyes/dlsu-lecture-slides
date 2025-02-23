@@ -1,20 +1,8 @@
 repos:
-- repo: https://github.com/markdownlint/markdownlint
-  rev: v0.12.0  # Use the latest version
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.12.1  # Use a specific version instead of latest
   hooks:
-    - id: markdownlint
+    - id: markdownlint-cli2
       name: Markdownlint
       description: Run markdownlint on your Markdown files
-      entry: mdl
-      language: ruby
       files: \.(md|mdown|markdown)$
-
-- repo: docker://markdownlint/markdownlint
-  rev: latest
-  hooks:
-    - id: markdownlint_docker
-      name: Markdownlint Docker
-      description: Run markdown lint on your Markdown files using the project docker image
-      language: docker_image
-      files: \.(md|mdown|markdown)$
-      entry: markdownlint/markdownlint
