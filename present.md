@@ -4,12 +4,13 @@ title: Data Mining: Concepts, Techniques, and Applications
 author: Marc Reyes, De La Salle University, Department of Software Technology, Professorial Lecturer
 theme: default
 paginate: true
+math: katex
 ---
 
-# Data Mining: Concepts, Techniques, and Applications  
-### An In-Depth Exploration
-Marc Reyes  
-De La Salle University, Department of Software Technology, Professorial Lecturer  
+# Data Mining
+
+**Marc Reyes**  
+Department of Software Technology  
 May 2025
 
 ---
@@ -38,9 +39,11 @@ May 2025
 # What is Data Mining?
 
 **Definition:**
+
 - The process of discovering hidden patterns, trends, and relationships in large datasets using mathematical models and algorithms.
 
 **Key Elements:**
+
 - **Data:** The raw material (structured or unstructured).
 - **Algorithms:** Mathematical models used to extract insights.
 - **Domain Knowledge:** Expertise required for proper interpretation.
@@ -50,12 +53,14 @@ May 2025
 # Data Mining vs. Related Fields
 
 **Data Mining vs. Machine Learning:**
+
 - Focuses on pattern discovery using measures like entropy, information gain, and the Gini index:
   $$
   Gini(S) = 1 - \sum_{i=1}^{n} p_i^2
   $$
   
 **Data Mining vs. Data Analytics:**
+
 - Data Analytics is hypothesis-driven, while data mining is exploratory.
 
 ---
@@ -132,9 +137,11 @@ May 2025
 # Exploratory Data Analysis (EDA)
 
 **Purpose:**
+
 - Understand distributions, identify trends, and detect outliers.
 
 **Techniques:**
+
 - Statistical summaries (Mean, Variance, Standard Deviation).
 - Visualizations (Histograms, Scatter Plots, Box Plots).
 - Correlation Coefficient:
@@ -275,7 +282,9 @@ May 2025
 # Apriori Algorithm: Pruning
 
 - **Pruning Condition:**  
-  - Remove candidate \(X\) if any \((k-1)\)-subset of \(X\) is not frequent.
+  $$
+  L_k = \{ X \in C_k \mid \text{all } (k-1)\text{-subsets of } X \text{ are in } L_{k-1} \}
+  $$
 
 ---
 
@@ -292,7 +301,7 @@ May 2025
 
 - **Frequent Pattern Extraction:**
   $$
-  \text{Frequent Patterns} = \{ \alpha \cup \beta \mid \beta \in \text{FPGrowth}(T_{\alpha}) \}
+  \text{FPGrowth}(T_{\alpha}) = \{ \alpha \cup \beta \mid \beta \in \text{FPGrowth}(T_{\alpha}) \}
   $$
 
 ---
@@ -312,7 +321,7 @@ May 2025
   $$
   RSS = \sum_{i=1}^m (y_i - \hat{y}_i)^2
   $$
-- **Coefficient of Determination (\(R^2\)):**
+- **Coefficient of Determination ($R^2$):**
   $$
   R^2 = 1 - \frac{RSS}{TSS}, \quad TSS = \sum_{i=1}^m (y_i - \bar{y})^2
   $$
@@ -361,6 +370,7 @@ May 2025
 # Tools & Software for Data Mining
 
 **Popular Platforms:**
+
 - Python (scikit-learn, Pandas, NumPy)
 - R (caret, dplyr, ggplot2)
 - Weka (GUI-based tool)
@@ -371,6 +381,7 @@ May 2025
 # Real-World Applications of Data Mining
 
 **Industries & Applications:**
+
 - Marketing: Customer segmentation and recommendation systems.
 - Finance: Fraud detection and risk analysis.
 - Healthcare: Diagnostic support and personalized treatment planning.
@@ -381,58 +392,87 @@ May 2025
 # Challenges and Ethical Considerations
 
 **Challenges:**
+
 - Handling high-dimensional data (the curse of dimensionality).
-- Scalability and computational efficiency (e.g., \(O(n \cdot k \cdot t)\) for k-means).
+- Scalability and computational efficiency (e.g., $O(n \cdot k \cdot t)$ for k-means).
 - Data quality issues such as noise and missing values.
 
 **Ethical Considerations:**
+
 - Privacy, bias, and transparency.
 
 ---
 
-# Advanced Case Study: Market Basket Analysis Using Association Rule Mining
+# Case Study: Market Basket Analysis Using Association Rule Mining
 
 **Project Example:**
-- Advanced Market Basket Analysis in a Large Supermarket Chain
+
+- Market Basket Analysis in a Large Supermarket Chain
 
 **Dataset:**
+
 - Instacart Online Grocery Shopping Dataset
   - Over 3 million orders, 200,000+ unique products, 200,000+ customers.
   - Key columns: order_id, user_id, product_id, add_to_cart_order, reordered, order_dow, order_hour_of_day, etc.
 
+---
+
+# Case Study: Data Collection & Preprocessing
+
 **Phases:**
+
 1. **Data Collection:**  
    - Obtain the extensive Instacart dataset covering millions of transactions.
 2. **Preprocessing:**  
    - Clean the dataset by removing duplicates and standardizing product codes.
-3. **Mining Using Apriori & FP-Growth:**
-   - **Apriori:**
-     - Generate candidate itemsets:
-       $$
-       C_k = \{ X \cup Y \mid X, Y \in L_{k-1}, \; |X \cap Y| = k-2 \}
-       $$
-     - Prune candidates by ensuring every \((k-1)\)-subset is frequent.
-   - **FP-Growth:**
-     - Build an FP-tree to represent the dataset compactly.
-     - Extract the conditional pattern base:
-       $$
-       \{ (\beta, \text{count}) \mid \beta \text{ is a prefix path in the FP-tree for a given prefix } \alpha \}
-       $$
-     - Recursively extract frequent patterns:
-       $$
-       \text{Frequent Patterns} = \{ \alpha \cup \beta \mid \beta \in \text{FPGrowth}(T_{\alpha}) \}
-       $$
-4. **Evaluation:**
-   - Compute Support, Confidence, Lift, Leverage, and Conviction for each rule.
-   - Identify high-value rules (e.g., "Bread → Butter" with support 0.15, confidence 50%, lift 2.5).
-5. **Deployment:**
-   - Use the mined rules to optimize store layouts, personalize promotions, and improve inventory management.
+
+---
+
+# Case Study: Mining Techniques - Apriori
+
+**Mining Using Apriori:**
+
+- Generate candidate itemsets:
+  $$
+  C_k = \{ X \cup Y \mid X, Y \in L_{k-1}, \; |X \cap Y| = k-2 \}
+  $$
+- Prune candidates by ensuring every $(k-1)$-subset is frequent.
+
+---
+
+# Case Study: Mining Techniques - FP-Growth
+
+**Mining Using FP-Growth:**
+
+- Build an FP-tree to represent the dataset compactly.
+- Extract the conditional pattern base:
+  $$
+  \{ (\beta, \text{count}) \mid \beta \text{ is a prefix path in the FP-tree for a given prefix } \alpha \}
+  $$
+- Recursively extract frequent patterns:
+  $$
+  \text{FPGrowth}(T_{\alpha}) = \{ \alpha \cup \beta \mid \beta \in \text{FPGrowth}(T_{\alpha}) \}
+  $$
+
+---
+
+# Case Study: Evaluation & Deployment
+
+**Evaluation:**
+
+- Compute Support, Confidence, Lift, Leverage, and Conviction for each rule.
+- Identify high-value rules (e.g., $\text{Support}(\text{Bread} \rightarrow \text{Butter}) = 0.15$, $\text{Confidence} = 0.50$, $\text{Lift} = 2.5$).
+
+**Deployment:**
+
+- Use the mined rules to optimize store layouts, personalize promotions, and improve inventory management.
 
 ---
 
 # Summary & Key Takeaways
 
 **Recap:**
+
 - Definition and significance of data mining.
 - The complete KDD process: data collection, preprocessing, exploration, mining, evaluation, and deployment.
 - Core techniques: classification, clustering, and advanced association rule mining (with detailed math for Apriori and FP-Growth), regression, and anomaly detection.
@@ -443,6 +483,15 @@ May 2025
 # Questions & Discussion
 
 **Discussion Prompts:**
+
 - Which mathematical technique do you find most applicable to real-world computer science problems?
-- What challenges do you foresee when working with large-scale datasets like Instacart’s?
+- What challenges do you foresee when working with large-scale datasets like Instacart's?
 - How can we balance technical innovation with ethical considerations in data mining?
+
+---
+
+# Thank You
+
+Marc Reyes
+
+*Questions & Comments Welcome*
