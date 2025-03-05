@@ -429,8 +429,6 @@ footer {
   color: var(--gray-500);
   font-size: 0.9rem;
   border-top: 1px solid var(--gray-200);
-  background-color: var(--light-color);
-  border-radius: var(--border-radius);
 }
 
 footer a {
