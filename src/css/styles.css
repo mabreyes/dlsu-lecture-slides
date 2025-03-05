@@ -492,3 +492,26 @@ footer a:hover {
     height: 300px;
   }
 }
+
+/* Material Icons styling */
+.material-icons-round {
+  font-size: 24px;
+  vertical-align: middle;
+  color: var(--primary-color);
+}
+
+.navbar-logo .material-icons-round {
+  font-size: 28px;
+  margin-right: 6px;
+}
+
+button .material-icons-round {
+  font-size: 20px;
+  margin-right: 4px;
+  color: inherit;
+}
+
+/* Card title with icon */
+.card-title .material-icons-round {
+  color: var(--primary-color);
+}
