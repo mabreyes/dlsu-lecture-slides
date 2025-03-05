@@ -1,4 +1,5 @@
 import '../css/styles.css';
+import * as tf from '@tensorflow/tfjs';
 import MLP from './mlp';
 import MLPVisualizer from './visualizer';
 import DataGenerator from './dataGenerator';
@@ -186,7 +187,7 @@ class MLPVisualizerApp {
   /**
    * Train the neural network
    */
-  trainNetwork() {
+  async trainNetwork() {
     if (!this.mlp || !this.trainingData) {
       console.error("Missing MLP or training data");
       return;
@@ -209,45 +210,51 @@ class MLPVisualizerApp {
     document.getElementById('epoch-display').textContent = 'Epoch: 0/0';
     
     // Use setTimeout to allow UI to update before training starts
-    setTimeout(() => {
-      // Train the network
-      const history = this.mlp.train(
-        this.trainingData,
-        this.config.epochs,
-        this.config.learningRate,
-        (epoch, loss, accuracy) => {
-          // Update UI every 10 epochs
-          if (epoch % 10 === 0 || epoch === this.config.epochs - 1) {
-            // Update epoch counter
-            document.getElementById('epoch-display').textContent = `Epoch: ${epoch + 1}/${this.config.epochs}`;
-            
-            // Update loss value
-            document.getElementById('loss-display').textContent = `Loss: ${loss.toFixed(6)}`;
-            
-            // Update accuracy if available
-            if (accuracy !== undefined) {
-              document.getElementById('accuracy-display').textContent = `Accuracy: ${(accuracy * 100).toFixed(2)}%`;
+    setTimeout(async () => {
+      try {
+        // Train the network
+        const history = await this.mlp.train(
+          this.trainingData,
+          this.config.epochs,
+          this.config.learningRate,
+          (epoch, loss, accuracy) => {
+            // Update UI every 10 epochs
+            if (epoch % 10 === 0 || epoch === this.config.epochs - 1) {
+              // Update epoch counter
+              document.getElementById('epoch-display').textContent = `Epoch: ${epoch + 1}/${this.config.epochs}`;
+              
+              // Update loss value
+              document.getElementById('loss-display').textContent = `Loss: ${loss.toFixed(6)}`;
+              
+              // Update accuracy if available
+              if (accuracy !== undefined) {
+                document.getElementById('accuracy-display').textContent = `Accuracy: ${(accuracy * 100).toFixed(2)}%`;
+              }
+              
+              // Update visualizations
+              this.networkVisualizer.updateWeights(this.mlp.getNetworkStructure().weights);
+              this.dataVisualizer.render();
             }
-            
-            // Update visualizations
-            this.networkVisualizer.updateWeights(this.mlp.getNetworkStructure().weights);
-            this.dataVisualizer.render();
           }
-        }
-      );
-      
-      // Update network visualization
-      this.networkVisualizer.updateWeights(this.mlp.getNetworkStructure().weights);
-      
-      // Update data visualization
-      this.dataVisualizer.updateModel(this.mlp);
-      
-      // Re-enable train button
-      trainButton.disabled = false;
-      trainButton.textContent = 'Train Network';
-      
-      // Update stats
-      this.updateStatsUI();
+        );
+        
+        // Update network visualization
+        this.networkVisualizer.updateWeights(this.mlp.getNetworkStructure().weights);
+        
+        // Update data visualization
+        this.dataVisualizer.updateModel(this.mlp);
+        
+        // Re-enable train button
+        trainButton.disabled = false;
+        trainButton.textContent = 'Train Network';
+        
+        // Update stats
+        this.updateStatsUI();
+      } catch (error) {
+        console.error("Error during training:", error);
+        trainButton.disabled = false;
+        trainButton.textContent = 'Train Network';
+      }
     }, 100);
   }
   
@@ -273,11 +280,26 @@ class MLPVisualizerApp {
     this.config.learningRate = learningRate;
     this.config.activation = activation;
     
-    // Create new network
+    // Recreate network with new configuration
     this.createNetwork();
+    
+    // Force update visualizations
+    const networkData = this.mlp.getNetworkStructure();
+    this.networkVisualizer.setNetworkData(networkData);
+    this.networkVisualizer.render();
+    this.dataVisualizer.setModel(this.mlp);
+    this.dataVisualizer.render();
     
     // Update UI
     this.updateConfigUI();
+    
+    console.log("Network updated with:", {
+      inputSize: this.config.inputSize,
+      hiddenLayers: this.config.hiddenLayers,
+      outputSize: this.config.outputSize,
+      activation: this.config.activation,
+      learningRate: this.config.learningRate
+    });
   }
   
   /**
@@ -330,11 +352,24 @@ class MLPVisualizerApp {
    * Reset the neural network
    */
   resetNetwork() {
+    console.log("Resetting network...");
+    
     // Create a new network with the same configuration
     this.createNetwork();
     
+    // Force visual update
+    const networkData = this.mlp.getNetworkStructure();
+    this.networkVisualizer.setNetworkData(networkData);
+    this.networkVisualizer.render();
+    
+    // Update data visualization
+    this.dataVisualizer.setModel(this.mlp);
+    this.dataVisualizer.render();
+    
     // Update UI
     this.updateStatsUI();
+    
+    console.log("Network reset complete");
   }
   
   /**
@@ -399,9 +434,12 @@ class MLPVisualizerApp {
 }
 
 // Start the application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('Initializing MLP Visualizer App...');
+    // Wait for TensorFlow.js to be ready
+    await tf.ready();
+    console.log('TensorFlow.js is ready');
     window.app = new MLPVisualizerApp();
     console.log('App initialized successfully');
   } catch (error) {

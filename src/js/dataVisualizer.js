@@ -68,6 +68,7 @@ class DataVisualizer {
    */
   setModel(model) {
     this.model = model;
+    console.log("Model set in DataVisualizer");
   }
   
   /**
@@ -186,46 +187,62 @@ class DataVisualizer {
     
     // Generate grid points
     const gridData = [];
+    const inputs = [];
     
     for (let x = xDomain[0]; x <= xDomain[1]; x += xStep) {
       for (let y = yDomain[0]; y <= yDomain[1]; y += yStep) {
-        // Make prediction
-        const prediction = this.model.predict([x, y]);
-        
+        inputs.push([x, y]);
         gridData.push({
           x,
           y,
-          prediction
+          prediction: null // Will be filled later
         });
       }
     }
     
-    // Create color scale
-    const colorScale = d3.scaleSequential(d3.interpolateRdBu)
-      .domain([1, 0]);
-    
-    // Draw boundary
-    plot.selectAll(".grid-point")
-      .data(gridData)
-      .enter()
-      .append("rect")
-      .attr("class", "grid-point")
-      .attr("x", d => this.xScale(d.x) - xStep / 2)
-      .attr("y", d => this.yScale(d.y) - yStep / 2)
-      .attr("width", Math.ceil(this.xScale(xDomain[0] + xStep) - this.xScale(xDomain[0])))
-      .attr("height", Math.ceil(this.yScale(yDomain[0]) - this.yScale(yDomain[0] + yStep)))
-      .style("fill", d => {
-        // Determine color based on prediction
-        if (d.prediction.length === 1) {
-          return colorScale(d.prediction[0]);
-        } else {
-          // For multi-class, use index of max value for color
-          const maxIndex = d.prediction.indexOf(Math.max(...d.prediction));
-          const colors = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6"];
-          return colors[maxIndex % colors.length];
-        }
-      })
-      .style("opacity", 0.2);
+    // Make predictions in batch for better performance
+    try {
+      console.log("Making grid predictions...");
+      const predictions = this.model.predict(inputs);
+      
+      // Update gridData with predictions
+      for (let i = 0; i < gridData.length; i++) {
+        gridData[i].prediction = Array.isArray(predictions[i]) ? predictions[i] : [predictions[i]];
+      }
+      
+      // Create color scale
+      const colorScale = d3.scaleSequential(d3.interpolateRdBu)
+        .domain([1, 0]);
+      
+      // Draw boundary
+      plot.selectAll(".grid-point")
+        .data(gridData)
+        .enter()
+        .append("rect")
+        .attr("class", "grid-point")
+        .attr("x", d => this.xScale(d.x) - xStep / 2)
+        .attr("y", d => this.yScale(d.y) - yStep / 2)
+        .attr("width", Math.ceil(this.xScale(xDomain[0] + xStep) - this.xScale(xDomain[0])))
+        .attr("height", Math.ceil(this.yScale(yDomain[0]) - this.yScale(yDomain[0] + yStep)))
+        .style("fill", d => {
+          // Determine color based on prediction
+          if (!d.prediction || d.prediction.length === 0) {
+            return "#CCCCCC"; // Default gray for missing predictions
+          }
+          
+          if (d.prediction.length === 1) {
+            return colorScale(d.prediction[0]);
+          } else {
+            // For multi-class, use index of max value for color
+            const maxIndex = d.prediction.indexOf(Math.max(...d.prediction));
+            const colors = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6"];
+            return colors[maxIndex % colors.length];
+          }
+        })
+        .style("opacity", 0.2);
+    } catch (error) {
+      console.error("Error rendering decision boundary:", error);
+    }
   }
   
   /**
@@ -353,13 +370,13 @@ class DataVisualizer {
   }
   
   /**
-   * Update with new model for predictions
+   * Update model for making predictions
    */
   updateModel(model) {
     this.model = model;
-    if (this.data) {
-      this.render();
-    }
+    // Re-render with updated model
+    this.render();
+    console.log("Model updated in DataVisualizer");
   }
 }
 

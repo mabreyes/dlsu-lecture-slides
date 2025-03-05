@@ -1,90 +1,184 @@
 /**
- * A simple Multilayer Perceptron implementation for educational visualization
+ * A TensorFlow.js implementation of Multilayer Perceptron for educational visualization
  */
+import * as tf from '@tensorflow/tfjs';
+
 class MLP {
   constructor(inputSize, hiddenLayers, outputSize, activation = 'relu') {
     this.inputSize = inputSize;
     this.hiddenLayers = hiddenLayers;
     this.outputSize = outputSize;
     this.activation = activation;
+    this.learningRate = 0.03; // Default learning rate
     
     // Network architecture
+    this.model = null;
     this.network = [];
     
-    // Initialize weights and biases
+    // Initialize model
     this.initializeNetwork();
     
     // Training history
     this.history = {
       loss: [],
+      accuracy: [],
       epochs: 0
     };
   }
   
   /**
-   * Initialize the network with random weights and zero biases
+   * Initialize the TensorFlow.js model with appropriate layers
    */
   initializeNetwork() {
+    // Dispose previous model if exists
+    if (this.model) {
+      this.model.dispose();
+    }
+
+    // Create a sequential model
+    this.model = tf.sequential();
+    
     // Input layer to first hidden layer
     let layerSizes = [this.inputSize, ...this.hiddenLayers, this.outputSize];
+    
+    // Map activation function name to TensorFlow.js activation
+    const tfActivation = this.mapActivation(this.activation);
     
     // Create each layer
     for (let i = 0; i < layerSizes.length - 1; i++) {
       const inputSize = layerSizes[i];
       const outputSize = layerSizes[i + 1];
       
-      // Initialize weights with Xavier/Glorot initialization
-      const weights = Array(outputSize).fill().map(() => 
-        Array(inputSize).fill().map(() => (Math.random() * 2 - 1) * Math.sqrt(2 / (inputSize + outputSize)))
-      );
+      // Initialize weights
+      const isFirstLayer = i === 0;
+      const isOutputLayer = i === layerSizes.length - 2;
       
-      // Initialize biases with zeros
-      const biases = Array(outputSize).fill(0);
+      // Use sigmoid for binary classification output, otherwise use the specified activation
+      const activationFn = isOutputLayer ? 'sigmoid' : tfActivation;
       
-      // Add layer to network
+      // Use a custom initializer to ensure more visible weights in visualization
+      const layer = tf.layers.dense({
+        units: outputSize,
+        activation: activationFn,
+        inputShape: isFirstLayer ? [inputSize] : undefined,
+        kernelInitializer: 'varianceScaling',
+        biasInitializer: 'zeros'
+      });
+      
+      this.model.add(layer);
+      
+      console.log(`Added layer with ${inputSize} inputs, ${outputSize} outputs, and ${activationFn} activation`);
+      
+      // Store layer information for visualization with initial random weights for better visibility
       this.network.push({
-        weights,
-        biases,
-        // Storage for forward and backward passes
+        weights: Array(outputSize).fill().map(() => 
+          Array(inputSize).fill().map(() => (Math.random() * 2 - 1) * 0.5)
+        ),
+        biases: Array(outputSize).fill(0),
         activations: Array(outputSize).fill(0),
         inputs: Array(outputSize).fill(0),
         deltas: Array(outputSize).fill(0)
       });
     }
+    
+    // Compile the model
+    this.model.compile({
+      optimizer: tf.train.adam(this.learningRate),
+      loss: 'meanSquaredError',
+      metrics: ['accuracy']
+    });
+    
+    // Extract weights for visualization
+    // After the model is compiled, the weights will be initialized
+    // Use a timeout to ensure the model weights are fully initialized
+    setTimeout(() => {
+      this.updateNetworkWeights();
+    }, 100);
   }
   
   /**
-   * Activation functions
+   * Map activation function names to TensorFlow.js names
    */
-  activationFunction(x) {
-    switch (this.activation) {
+  mapActivation(activation) {
+    switch (activation) {
       case 'sigmoid':
-        return 1 / (1 + Math.exp(-x));
+        return 'sigmoid';
       case 'tanh':
-        return Math.tanh(x);
+        return 'tanh';
       case 'leaky-relu':
-        return x > 0 ? x : 0.01 * x;
+        return 'leakyReLU';
       case 'relu':
       default:
-        return Math.max(0, x);
+        return 'relu';
     }
   }
   
   /**
-   * Derivatives of activation functions
+   * Update internal network representation for visualization
    */
-  activationDerivative(x) {
-    switch (this.activation) {
-      case 'sigmoid':
-        const sig = this.activationFunction(x);
-        return sig * (1 - sig);
-      case 'tanh':
-        return 1 - Math.pow(Math.tanh(x), 2);
-      case 'leaky-relu':
-        return x > 0 ? 1 : 0.01;
-      case 'relu':
-      default:
-        return x > 0 ? 1 : 0;
+  updateNetworkWeights() {
+    if (!this.model || this.model.layers.length === 0) {
+      console.warn("Cannot update weights: model not initialized");
+      return;
+    }
+
+    try {
+      // Iterate through model layers and extract weights
+      for (let i = 0; i < this.network.length; i++) {
+        if (i < this.model.layers.length) {
+          const layer = this.model.layers[i];
+          
+          // Get weights and biases tensors
+          const weights = layer.getWeights();
+          if (weights.length === 0) {
+            console.warn(`Layer ${i} has no weights yet`);
+            continue; // Skip layers without weights
+          }
+          
+          const [weightsArray, biasArray] = weights;
+          
+          // TensorFlow stores weights in a different format than our visualizer expects
+          // For dense layers, weights are stored as [inputSize, outputSize] but we need [outputSize, inputSize]
+          const weightsData = weightsArray.arraySync();
+          const biases = biasArray.dataSync();
+          
+          // Reshape weights to match our visualizer's expected format
+          // Convert from [inputSize, outputSize] to [outputSize, inputSize]
+          const outputSize = weightsData[0].length || weightsData.length;
+          const inputSize = weightsData.length ? (Array.isArray(weightsData[0]) ? weightsData.length : 1) : 0;
+          
+          // Prepare formatted weights
+          const formattedWeights = [];
+          
+          // For 2D weights (most common case)
+          if (Array.isArray(weightsData) && Array.isArray(weightsData[0])) {
+            for (let j = 0; j < outputSize; j++) {
+              const neuronWeights = [];
+              for (let k = 0; k < inputSize; k++) {
+                neuronWeights.push(weightsData[k][j]);
+              }
+              formattedWeights.push(neuronWeights);
+            }
+          } 
+          // For 1D weights (unusual, but handle it)
+          else if (Array.isArray(weightsData)) {
+            for (let j = 0; j < outputSize; j++) {
+              formattedWeights.push([weightsData[j]]);
+            }
+          }
+          
+          // Update network with formatted weights and biases
+          this.network[i].weights = formattedWeights;
+          this.network[i].biases = Array.from(biases);
+          
+          // Log the first weight for debugging
+          if (formattedWeights.length > 0 && formattedWeights[0].length > 0) {
+            console.log(`Layer ${i} first weight: ${formattedWeights[0][0]}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error updating network weights:", error);
     }
   }
   
@@ -92,107 +186,34 @@ class MLP {
    * Forward pass through the network
    */
   forward(input) {
-    let currentInput = [...input];
+    // Convert input to tensor
+    const inputTensor = tf.tensor2d([input]);
     
-    // Process through each layer
-    for (let i = 0; i < this.network.length; i++) {
-      const layer = this.network[i];
-      const nextInput = [];
-      
-      // Calculate outputs for each neuron in this layer
-      for (let j = 0; j < layer.weights.length; j++) {
-        // Weighted sum
-        let sum = layer.biases[j];
-        for (let k = 0; k < layer.weights[j].length; k++) {
-          sum += layer.weights[j][k] * currentInput[k];
-        }
-        
-        // Store pre-activation input
-        layer.inputs[j] = sum;
-        
-        // Apply activation function
-        layer.activations[j] = this.activationFunction(sum);
-        
-        // Add to outputs for next layer
-        nextInput.push(layer.activations[j]);
-      }
-      
-      // Set current input to this layer's output
-      currentInput = nextInput;
-    }
+    // Get prediction
+    const predictionTensor = this.model.predict(inputTensor);
     
-    // Return final output
-    return currentInput;
+    // Convert to JavaScript array
+    const prediction = Array.from(predictionTensor.dataSync());
+    
+    // Clean up tensors
+    inputTensor.dispose();
+    predictionTensor.dispose();
+    
+    return prediction;
   }
   
   /**
    * Compute Mean Squared Error loss
    */
   computeLoss(predicted, actual) {
-    let sum = 0;
-    for (let i = 0; i < predicted.length; i++) {
-      sum += Math.pow(predicted[i] - actual[i], 2);
-    }
-    return sum / predicted.length;
-  }
-  
-  /**
-   * Backward pass for training
-   */
-  backward(input, target, learningRate) {
-    // Forward pass to get activations
-    const output = this.forward(input);
+    const predictedTensor = tf.tensor1d(predicted);
+    const actualTensor = tf.tensor1d(actual);
     
-    // Calculate loss
-    const loss = this.computeLoss(output, target);
+    const loss = tf.losses.meanSquaredError(actualTensor, predictedTensor).dataSync()[0];
     
-    // Calculate output layer errors
-    const outputLayer = this.network[this.network.length - 1];
-    
-    for (let i = 0; i < outputLayer.deltas.length; i++) {
-      // Error gradient for output layer: derivative of MSE * derivative of activation
-      const errorGradient = 2 * (output[i] - target[i]) / outputLayer.deltas.length;
-      outputLayer.deltas[i] = errorGradient * this.activationDerivative(outputLayer.inputs[i]);
-    }
-    
-    // Backpropagate error through hidden layers
-    for (let l = this.network.length - 2; l >= 0; l--) {
-      const currentLayer = this.network[l];
-      const nextLayer = this.network[l + 1];
-      
-      for (let i = 0; i < currentLayer.deltas.length; i++) {
-        let error = 0;
-        
-        // Sum errors from neurons in the next layer connected to this neuron
-        for (let j = 0; j < nextLayer.deltas.length; j++) {
-          error += nextLayer.deltas[j] * nextLayer.weights[j][i];
-        }
-        
-        // Calculate delta using the error and activation derivative
-        currentLayer.deltas[i] = error * this.activationDerivative(currentLayer.inputs[i]);
-      }
-    }
-    
-    // Update weights and biases
-    let layerInput = input;
-    
-    for (let l = 0; l < this.network.length; l++) {
-      const layer = this.network[l];
-      
-      // Update each neuron in the layer
-      for (let i = 0; i < layer.weights.length; i++) {
-        // Update bias
-        layer.biases[i] -= learningRate * layer.deltas[i];
-        
-        // Update each weight
-        for (let j = 0; j < layer.weights[i].length; j++) {
-          layer.weights[i][j] -= learningRate * layer.deltas[i] * layerInput[j];
-        }
-      }
-      
-      // Set input for next layer
-      layerInput = layer.activations;
-    }
+    // Clean up tensors
+    predictedTensor.dispose();
+    actualTensor.dispose();
     
     return loss;
   }
@@ -200,30 +221,52 @@ class MLP {
   /**
    * Train the network using a dataset
    */
-  train(dataset, epochs, learningRate = 0.03, callback = null) {
+  async train(dataset, epochs, learningRate = 0.03, callback = null) {
+    // Update learning rate
+    this.learningRate = learningRate;
+    
+    // Reset history
     this.history.loss = [];
+    this.history.accuracy = [];
     this.history.epochs = 0;
     
-    // For each epoch
+    // Update optimizer with new learning rate
+    this.model.compile({
+      optimizer: tf.train.adam(this.learningRate),
+      loss: 'meanSquaredError',
+      metrics: ['accuracy']
+    });
+    
+    // Convert dataset to tensors
+    const inputs = tf.tensor2d(dataset.map(d => d.input));
+    const outputs = tf.tensor2d(dataset.map(d => d.output));
+    
+    // Train for each epoch manually so we can provide updates
     for (let epoch = 0; epoch < epochs; epoch++) {
-      let totalLoss = 0;
+      // Single training step
+      const result = await this.model.trainOnBatch(inputs, outputs);
+      const loss = result[0];
+      const accuracy = result.length > 1 ? result[1] : undefined;
       
-      // Train on each example
-      for (let i = 0; i < dataset.length; i++) {
-        const { input, output } = dataset[i];
-        totalLoss += this.backward(input, output, learningRate);
+      // Update history
+      this.history.loss.push(loss);
+      if (accuracy !== undefined) {
+        this.history.accuracy.push(accuracy);
       }
-      
-      // Calculate average loss for this epoch
-      const avgLoss = totalLoss / dataset.length;
-      this.history.loss.push(avgLoss);
       this.history.epochs++;
       
+      // Update network weights for visualization
+      this.updateNetworkWeights();
+      
       // Call callback if provided
-      if (callback && epoch % 10 === 0) {
-        callback(epoch, avgLoss);
+      if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
+        callback(epoch, loss, accuracy);
       }
     }
+    
+    // Clean up tensors
+    inputs.dispose();
+    outputs.dispose();
     
     return this.history;
   }
@@ -232,7 +275,36 @@ class MLP {
    * Predict output for a given input
    */
   predict(input) {
-    return this.forward(input);
+    // Handle both single examples and arrays of examples
+    const isArray = Array.isArray(input[0]);
+    let inputTensor;
+    
+    if (isArray) {
+      // Input is already a batch of examples
+      inputTensor = tf.tensor2d(input);
+    } else {
+      // Single example, convert to batch of 1
+      inputTensor = tf.tensor2d([input]);
+    }
+    
+    // Get prediction
+    const predictionTensor = this.model.predict(inputTensor);
+    
+    // Convert to JavaScript array
+    let prediction;
+    if (isArray) {
+      // Return array of predictions
+      prediction = Array.from(predictionTensor.arraySync());
+    } else {
+      // Return single prediction
+      prediction = Array.from(predictionTensor.dataSync());
+    }
+    
+    // Clean up tensors
+    inputTensor.dispose();
+    predictionTensor.dispose();
+    
+    return prediction;
   }
   
   /**
