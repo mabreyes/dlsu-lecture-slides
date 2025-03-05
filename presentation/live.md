@@ -6,7 +6,7 @@ paginate: true
 
 # Query Optimization: A Library Adventure
 *Using Storytelling, Hands-On Activities, Math & Diagrams to Learn SQL Tuning*
-**Presenter:** [Your Name]
+**Marc Reyes**
 
 ---
 

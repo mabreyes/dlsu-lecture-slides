@@ -613,7 +613,7 @@ class ScratchMLP:
 ---
 
 ## Under the Hood: Implementing an MLP from Scratch (2/3)
-
+    
 ```python
     def forward(self, X):
         # Forward propagation
@@ -629,7 +629,7 @@ class ScratchMLP:
 ---
 
 ## Under the Hood: Implementing an MLP from Scratch (3/3)
-
+    
 ```python
     def train(self, X, y, epochs=1000, lr=0.01):
         for epoch in range(epochs):
