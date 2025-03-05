@@ -22,6 +22,7 @@ class MLP {
     this.history = {
       loss: [],
       accuracy: [],
+      mae: [],
       epochs: 0
     };
   }
@@ -104,12 +105,15 @@ class MLP {
       optimizer = tf.train.adam(this.learningRate);
     }
     
-    // Compile the model
+    // Compile the model with appropriate metrics based on the task
     this.model.compile({
       optimizer: optimizer,
       loss: 'meanSquaredError',
-      metrics: ['accuracy']
+      metrics: isSineWave ? ['mae'] : ['accuracy']
     });
+    
+    // Set a flag to indicate if this is a regression task (for proper metrics display)
+    this.isRegression = isSineWave;
     
     // Extract weights for visualization
     // After the model is compiled, the weights will be initialized
@@ -251,13 +255,22 @@ class MLP {
     // Reset history
     this.history.loss = [];
     this.history.accuracy = [];
+    this.history.mae = [];
     this.history.epochs = 0;
     
     // Update optimizer with new learning rate
+    const isSineWave = this.inputSize === 1 && this.outputSize === 1;
+    let optimizer;
+    if (isSineWave) {
+      optimizer = tf.train.adam(this.learningRate * 0.5);
+    } else {
+      optimizer = tf.train.adam(this.learningRate);
+    }
+    
     this.model.compile({
-      optimizer: tf.train.adam(this.learningRate),
+      optimizer: optimizer,
       loss: 'meanSquaredError',
-      metrics: ['accuracy']
+      metrics: isSineWave ? ['mae'] : ['accuracy']
     });
     
     try {
@@ -282,22 +295,30 @@ class MLP {
         // Single training step
         const result = await this.model.trainOnBatch(inputs, outputs);
         const loss = result[0];
-        const accuracy = result.length > 1 ? result[1] : undefined;
         
-        // Update history
-        this.history.loss.push(loss);
-        if (accuracy !== undefined) {
+        // Store appropriate metric based on task type
+        if (isSineWave) {
+          const mae = result[1]; // mae is the second metric
+          this.history.mae.push(mae);
+          // Call callback with MAE instead of accuracy for regression tasks
+          if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
+            callback(epoch, loss, mae, true); // true indicates this is MAE, not accuracy
+          }
+        } else {
+          const accuracy = result[1]; // accuracy is the second metric
           this.history.accuracy.push(accuracy);
+          // Call callback with accuracy for classification tasks
+          if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
+            callback(epoch, loss, accuracy, false); // false indicates this is accuracy, not MAE
+          }
         }
+        
+        // Update common history
+        this.history.loss.push(loss);
         this.history.epochs++;
         
         // Update network weights for visualization
         this.updateNetworkWeights();
-        
-        // Call callback if provided
-        if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
-          callback(epoch, loss, accuracy);
-        }
       }
       
       // Clean up tensors

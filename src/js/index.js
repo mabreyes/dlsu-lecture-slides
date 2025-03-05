@@ -217,7 +217,18 @@ class MLPVisualizerApp {
     
     // Reset stats display
     document.getElementById('loss-display').textContent = 'Loss: 0';
-    document.getElementById('accuracy-display').textContent = 'Accuracy: 0%';
+    
+    // Check if we're dealing with sine wave regression
+    const isSineWave = this.config.inputSize === 1 && this.config.outputSize === 1;
+    
+    // Update the accuracy/MAE display based on the task type
+    const metricElement = document.getElementById('accuracy-display');
+    if (isSineWave) {
+      metricElement.textContent = 'MAE: 0';
+    } else {
+      metricElement.textContent = 'Accuracy: 0%';
+    }
+    
     document.getElementById('epoch-display').textContent = 'Epoch: 0/0';
     
     // Use setTimeout to allow UI to update before training starts
@@ -228,7 +239,7 @@ class MLPVisualizerApp {
           this.trainingData,
           this.config.epochs,
           this.config.learningRate,
-          (epoch, loss, accuracy) => {
+          (epoch, loss, metric, isMAE) => {
             // Update UI every 10 epochs
             if (epoch % 10 === 0 || epoch === this.config.epochs - 1) {
               // Update epoch counter
@@ -237,9 +248,13 @@ class MLPVisualizerApp {
               // Update loss value
               document.getElementById('loss-display').textContent = `Loss: ${loss.toFixed(6)}`;
               
-              // Update accuracy if available
-              if (accuracy !== undefined) {
-                document.getElementById('accuracy-display').textContent = `Accuracy: ${(accuracy * 100).toFixed(2)}%`;
+              // Update metric display (accuracy or MAE)
+              if (isMAE) {
+                // For regression (sine wave), display MAE
+                metricElement.textContent = `MAE: ${metric.toFixed(6)}`;
+              } else {
+                // For classification, display accuracy percentage
+                metricElement.textContent = `Accuracy: ${(metric * 100).toFixed(2)}%`;
               }
               
               // Update visualizations
@@ -352,11 +367,23 @@ class MLPVisualizerApp {
       : 0;
     document.getElementById('loss-display').textContent = `Loss: ${lastLoss.toFixed(6)}`;
     
-    // Update accuracy if available
-    const lastAccuracy = this.mlp.history.accuracy?.length > 0
-      ? this.mlp.history.accuracy[this.mlp.history.accuracy.length - 1]
-      : 0;
-    document.getElementById('accuracy-display').textContent = `Accuracy: ${(lastAccuracy * 100).toFixed(2)}%`;
+    // Check if we're dealing with sine wave (regression)
+    const isSineWave = this.config.inputSize === 1 && this.config.outputSize === 1;
+    const metricElement = document.getElementById('accuracy-display');
+    
+    if (isSineWave) {
+      // For regression, display MAE
+      const lastMAE = this.mlp.history.mae?.length > 0
+        ? this.mlp.history.mae[this.mlp.history.mae.length - 1]
+        : 0;
+      metricElement.textContent = `MAE: ${lastMAE.toFixed(6)}`;
+    } else {
+      // For classification, display Accuracy percentage
+      const lastAccuracy = this.mlp.history.accuracy?.length > 0
+        ? this.mlp.history.accuracy[this.mlp.history.accuracy.length - 1]
+        : 0;
+      metricElement.textContent = `Accuracy: ${(lastAccuracy * 100).toFixed(2)}%`;
+    }
   }
   
   /**
