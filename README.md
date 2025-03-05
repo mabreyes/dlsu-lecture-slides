@@ -23,8 +23,8 @@ An interactive visualization tool for understanding Multilayer Perceptrons (MLPs
 1. Clone the repository:
 
    ```
-   git clone https://github.com/yourusername/mlp-visualizer.git
-   cd mlp-visualizer
+   git clone https://github.com/mabreyes/dlsu-lecture-slides.git
+   cd dlsu-lecture-slides
    ```
 
 2. Install dependencies:
@@ -85,16 +85,26 @@ This visualizer includes:
 The project is implemented using:
 
 - **JavaScript/ES6**: Core programming language
+- **TensorFlow.js**: For neural network implementation and training
 - **D3.js**: For advanced visualizations
 - **HTML5/CSS3**: For the user interface
 - **Webpack**: For bundling and development workflow
 
-The neural network is implemented from scratch, including:
+The neural network uses TensorFlow.js for:
 
 - Forward propagation
 - Backpropagation
 - Weight updates
 - Various activation functions
+- Performance metrics (MAE, accuracy)
+
+## Mobile & Responsive Design
+
+The visualizer is fully responsive and works on devices of all sizes:
+
+- **Desktop**: Full feature set with optimal visualization space
+- **Tablet**: Responsive layout with adjusted visualizations
+- **Mobile**: Streamlined interface with touch-friendly controls
 
 ## Extending the Project
 
@@ -105,6 +115,11 @@ You can extend this project by:
 3. Adding more network visualization options
 4. Implementing regularization techniques
 5. Adding support for convolutional or recurrent layers
+
+## Repository
+
+This project is part of the DLSU Lecture Slides repository:
+[https://github.com/mabreyes/dlsu-lecture-slides](https://github.com/mabreyes/dlsu-lecture-slides)
 
 ## License
 
