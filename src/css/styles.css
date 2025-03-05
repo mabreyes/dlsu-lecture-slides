@@ -37,12 +37,14 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
   line-height: 1.6;
   color: var(--gray-800);
   background-color: var(--gray-100);
   padding-bottom: 3rem;
   min-height: 100vh;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .container {
@@ -50,6 +52,9 @@ body {
   margin: 0 auto;
   padding: 2rem;
   padding-top: calc(var(--navbar-height) + 2rem);
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  box-sizing: border-box;
 }
 
 /* Navbar */
@@ -189,7 +194,8 @@ h2 {
   gap: 2rem;
 }
 
-.network-visualization, .data-visualization {
+.network-visualization,
+.data-visualization {
   background-color: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
@@ -199,7 +205,8 @@ h2 {
   position: relative;
 }
 
-.network-visualization:hover, .data-visualization:hover {
+.network-visualization:hover,
+.data-visualization:hover {
   box-shadow: var(--box-shadow-lg);
   /* transform: translateY(-3px); */
 }
@@ -231,7 +238,8 @@ label {
   color: var(--gray-700);
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--gray-300);
@@ -242,13 +250,14 @@ input, select {
   background-color: white;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
 }
 
-input[type="range"] {
+input[type='range'] {
   width: 85%;
   vertical-align: middle;
   accent-color: var(--primary-color);
@@ -305,7 +314,9 @@ button:disabled {
 }
 
 /* Network Config, Training Config, Training Stats */
-.network-config, .training-config, .training-stats {
+.network-config,
+.training-config,
+.training-stats {
   margin-bottom: 1.75rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--gray-200);
@@ -328,7 +339,8 @@ button:disabled {
 }
 
 /* Visualization Containers */
-#network-container, #data-container {
+#network-container,
+#data-container {
   width: 100%;
   height: 350px;
   border-radius: var(--border-radius-sm);
@@ -341,18 +353,21 @@ button:disabled {
 }
 
 /* Modern animated gradient background for visualizations */
-.network-visualization::before, .data-visualization::before {
+.network-visualization::before,
+.data-visualization::before {
   content: '';
   position: absolute;
   top: -50px;
   left: -50px;
   right: -50px;
   bottom: -50px;
-  background: linear-gradient(45deg, 
+  background: linear-gradient(
+    45deg,
     rgba(67, 97, 238, 0.03),
     rgba(58, 12, 163, 0.03),
     rgba(76, 201, 240, 0.03),
-    rgba(67, 97, 238, 0.03));
+    rgba(67, 97, 238, 0.03)
+  );
   background-size: 400% 400%;
   z-index: -1;
   filter: blur(30px);
@@ -374,14 +389,16 @@ button:disabled {
 }
 
 /* SVG Elements Styling - Enhanced */
-.node, .neuron {
+.node,
+.neuron {
   stroke: var(--gray-800);
   stroke-width: 1.5px;
   transition: var(--transition);
   filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.15));
 }
 
-.connection, .link {
+.connection,
+.link {
   stroke-opacity: 0.7;
   transition: var(--transition);
 }
@@ -478,18 +495,75 @@ footer a:hover {
   .main-content {
     grid-template-columns: 1fr;
   }
-  
+
   .navbar-links {
     display: none;
   }
-  
-  .network-visualization, .data-visualization {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+
+  .network-visualization,
+  .data-visualization {
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
   }
-  
-  #network-container, #data-container {
+
+  #network-container,
+  #data-container {
     height: 300px;
+  }
+}
+
+/* Additional responsive fixes for smaller screens */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    padding-top: calc(var(--navbar-height) + 1rem);
+    max-width: 100%;
+  }
+
+  .control-panel,
+  .network-visualization,
+  .data-visualization {
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Fix for potential overflow from before pseudo-elements */
+  .network-visualization::before,
+  .data-visualization::before {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .navbar-content {
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+    padding-top: calc(var(--navbar-height) + 0.75rem);
+  }
+
+  .control-panel,
+  .network-visualization,
+  .data-visualization {
+    padding: 0.85rem;
+  }
+
+  button {
+    width: 100%;
   }
 }
 
