@@ -67,7 +67,7 @@ class DataGenerator {
         
         data.push({
           input: [x, y],
-          output: i === 0 ? [1, 0] : [0, 1] // One-hot encoding of class
+          output: [i] // Class 0 or 1
         });
       }
     }
@@ -206,6 +206,36 @@ class DataGenerator {
     const testData = shuffled.slice(trainSize);
     
     return { trainData, testData };
+  }
+  
+  /**
+   * Generate a checkerboard pattern dataset
+   * Points in alternating squares are different classes
+   */
+  static generateCheckerboardData(n = 200, gridSize = 2) {
+    const data = [];
+    
+    // Generate n random points
+    for (let i = 0; i < n; i++) {
+      // Random position in a 2D space between -1 and 1
+      const x = Math.random() * 2 - 1;
+      const y = Math.random() * 2 - 1;
+      
+      // Determine which square in the grid the point falls into
+      const xGrid = Math.floor((x + 1) * (gridSize / 2));
+      const yGrid = Math.floor((y + 1) * (gridSize / 2));
+      
+      // If the sum of the grid coordinates is even, it's class 1, otherwise class 0
+      // This creates a checkerboard pattern
+      const isClass1 = (xGrid + yGrid) % 2 === 0;
+      
+      data.push({
+        input: [x, y],
+        output: [isClass1 ? 1 : 0]
+      });
+    }
+    
+    return data;
   }
 }
 

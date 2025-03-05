@@ -196,6 +196,44 @@ class MLPVisualizerApp {
   }
   
   /**
+   * Set spiral classification data
+   */
+  setSpiralData() {
+    // Get spiral classification data
+    this.trainingData = DataGenerator.generateSpiralData(200);
+    
+    // Update visualizer
+    this.dataVisualizer.setData(this.trainingData, '2d-scatter');
+    this.dataVisualizer.render();
+    
+    // Update configuration
+    this.config.inputSize = 2;
+    this.config.outputSize = 1;
+    this.config.hiddenLayers = [8, 8]; // Spirals are harder to learn, use more neurons
+    this.updateConfigUI();
+    this.createNetwork();
+  }
+  
+  /**
+   * Set checkerboard pattern data
+   */
+  setCheckerboardData() {
+    // Get checkerboard data
+    this.trainingData = DataGenerator.generateCheckerboardData(200);
+    
+    // Update visualizer
+    this.dataVisualizer.setData(this.trainingData, '2d-scatter');
+    this.dataVisualizer.render();
+    
+    // Update configuration
+    this.config.inputSize = 2;
+    this.config.outputSize = 1;
+    this.config.hiddenLayers = [8, 8]; // Checkerboard is harder to learn, use more neurons
+    this.updateConfigUI();
+    this.createNetwork();
+  }
+  
+  /**
    * Train the neural network
    */
   async trainNetwork() {
@@ -442,6 +480,12 @@ class MLPVisualizerApp {
           break;
         case 'sine':
           this.setSinusoidalData();
+          break;
+        case 'spiral':
+          this.setSpiralData();
+          break;
+        case 'checkerboard':
+          this.setCheckerboardData();
           break;
       }
       
