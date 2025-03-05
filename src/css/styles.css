@@ -1,9 +1,9 @@
 /* Modern, Sleek, Minimal Design - 2023 Edition */
 :root {
-  --primary-color: #4361ee;
-  --primary-light: #eef2ff;
-  --secondary-color: #3a0ca3;
-  --accent-color: #4cc9f0;
+  --primary-color: #0d6efd;
+  --primary-light: #e6f0ff;
+  --secondary-color: #0a58ca;
+  --accent-color: #6ea8fe;
   --success-color: #4ade80;
   --danger-color: #f43f5e;
   --dark-color: #111827;
@@ -250,7 +250,7 @@ input:focus,
 select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
 }
 
 input[type='range'] {
@@ -319,7 +319,7 @@ button:disabled {
 }
 
 .training-stats div:hover {
-  background-color: rgba(67, 97, 238, 0.15);
+  background-color: rgba(13, 110, 253, 0.15);
 }
 
 /* Visualization Containers */
