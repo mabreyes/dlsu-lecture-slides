@@ -1,0 +1,113 @@
+/* Modern Visualization Styles */
+
+/* Network Visualization Styles */
+.neuron {
+  filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.input-neuron {
+  fill: #4361ee;
+}
+
+.hidden-neuron {
+  fill: #3a0ca3;
+}
+
+.output-neuron {
+  fill: #4ade80;
+}
+
+.connection {
+  transition: all 0.3s;
+}
+
+.connection.positive {
+  stroke: #4ade80;
+}
+
+.connection.negative {
+  stroke: #f43f5e;
+}
+
+.neuron-label {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+.layer-label {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  user-select: none;
+}
+
+/* Data Visualization Styles */
+.data-point {
+  transition: all 0.2s;
+}
+
+.data-point:hover {
+  stroke-width: 2.5;
+  r: 6;
+}
+
+.grid-point {
+  transition: opacity 0.3s;
+}
+
+.grid-point:hover {
+  opacity: 0.4;
+}
+
+.axis line, .axis path {
+  stroke: #e2e8f0;
+  stroke-width: 1px;
+}
+
+.axis text {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 10px;
+  fill: #64748b;
+}
+
+/* Additional spacing adjustments */
+.visualization-panel {
+  padding-bottom: 30px;
+}
+
+/* Visualization containers should have more space */
+#network-container, #data-container {
+  padding-bottom: 30px;
+  margin-bottom: 10px;
+}
+
+/* Make sure SVG content is properly spaced */
+svg {
+  overflow: visible !important;
+  padding-bottom: 20px !important;
+}
+
+/* Ensure bottom of visualization has enough space */
+.data-visualization {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+}
+
+/* Add tooltips for interactive elements */
+.neuron, .data-point {
+  cursor: pointer;
+}
+
+/* Training progress animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.training-in-progress {
+  animation: pulse 1.5s infinite;
+} 
