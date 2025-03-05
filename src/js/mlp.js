@@ -10,23 +10,23 @@ class MLP {
     this.outputSize = outputSize;
     this.activation = activation;
     this.learningRate = 0.03; // Default learning rate
-    
+
     // Network architecture
     this.model = null;
     this.network = [];
-    
+
     // Initialize model
     this.initializeNetwork();
-    
+
     // Training history
     this.history = {
       loss: [],
       accuracy: [],
       mae: [],
-      epochs: 0
+      epochs: 0,
     };
   }
-  
+
   /**
    * Initialize the TensorFlow.js model with appropriate layers
    */
@@ -38,64 +38,73 @@ class MLP {
 
     // Create a sequential model
     this.model = tf.sequential();
-    
+
     // Input layer to first hidden layer
     let layerSizes = [this.inputSize, ...this.hiddenLayers, this.outputSize];
-    
+
     // Map activation function name to TensorFlow.js activation
     const tfActivation = this.mapActivation(this.activation);
-    
+
     // Special configuration for sine wave (1D input)
     const isSineWave = this.inputSize === 1 && this.outputSize === 1;
-    
+
     // Create each layer
     for (let i = 0; i < layerSizes.length - 1; i++) {
       const inputSize = layerSizes[i];
       const outputSize = layerSizes[i + 1];
-      
+
       // Initialize weights
       const isFirstLayer = i === 0;
       const isOutputLayer = i === layerSizes.length - 2;
-      
+
       // Use sigmoid for binary classification output, tanh for sine wave
       // otherwise use the specified activation
       let activationFn = tfActivation;
-      
+
       if (isOutputLayer) {
         if (isSineWave) {
           // For sine wave, tanh is better since output is between -1 and 1
           activationFn = 'tanh';
+        } else if (this.outputSize > 1) {
+          // For multi-class classification, use softmax
+          activationFn = 'softmax';
         } else {
-          // For classification, sigmoid is better
+          // For binary classification, sigmoid is better
           activationFn = 'sigmoid';
         }
       }
-      
+
       // Use a custom initializer to ensure more visible weights in visualization
       const layer = tf.layers.dense({
         units: outputSize,
         activation: activationFn,
         inputShape: isFirstLayer ? [inputSize] : undefined,
         kernelInitializer: 'varianceScaling',
-        biasInitializer: 'zeros'
+        biasInitializer: 'zeros',
       });
-      
+
       this.model.add(layer);
-      
-      console.log(`Added layer with ${inputSize} inputs, ${outputSize} outputs, and ${activationFn} activation`);
-      
+
+      console.log(
+        `Added layer with ${inputSize} inputs, ${outputSize} outputs, and ${activationFn} activation`
+      );
+
       // Store layer information for visualization with initial random weights for better visibility
       this.network.push({
-        weights: Array(outputSize).fill().map(() => 
-          Array(inputSize).fill().map(() => (Math.random() * 2 - 1) * 0.5)
-        ),
+        weights: Array(outputSize)
+          .fill()
+          .map(() =>
+            Array(inputSize)
+              .fill()
+              .map(() => (Math.random() * 2 - 1) * 0.5)
+          ),
         biases: Array(outputSize).fill(0),
         activations: Array(outputSize).fill(0),
         inputs: Array(outputSize).fill(0),
-        deltas: Array(outputSize).fill(0)
+        deltas: Array(outputSize).fill(0),
       });
     }
-    
+
     // Adjust optimizer for sine wave
     let optimizer;
     if (isSineWave) {
@@ -104,17 +113,21 @@ class MLP {
     } else {
       optimizer = tf.train.adam(this.learningRate);
     }
-    
+
     // Compile the model with appropriate metrics based on the task
     this.model.compile({
       optimizer: optimizer,
-      loss: 'meanSquaredError',
-      metrics: isSineWave ? ['mae'] : ['accuracy']
+      loss: isSineWave
+        ? 'meanSquaredError'
+        : this.outputSize > 1
+        ? 'categoricalCrossentropy'
+        : 'meanSquaredError',
+      metrics: isSineWave ? ['mae'] : ['accuracy'],
     });
-    
+
     // Set a flag to indicate if this is a regression task (for proper metrics display)
     this.isRegression = isSineWave;
-    
+
     // Extract weights for visualization
     // After the model is compiled, the weights will be initialized
     // Use a timeout to ensure the model weights are fully initialized
@@ -122,7 +135,7 @@ class MLP {
       this.updateNetworkWeights();
     }, 100);
   }
-  
+
   /**
    * Map activation function names to TensorFlow.js names
    */
@@ -139,13 +152,13 @@ class MLP {
         return 'relu';
     }
   }
-  
+
   /**
    * Update internal network representation for visualization
    */
   updateNetworkWeights() {
     if (!this.model || this.model.layers.length === 0) {
-      console.warn("Cannot update weights: model not initialized");
+      console.warn('Cannot update weights: model not initialized');
       return;
     }
 
@@ -154,29 +167,33 @@ class MLP {
       for (let i = 0; i < this.network.length; i++) {
         if (i < this.model.layers.length) {
           const layer = this.model.layers[i];
-          
+
           // Get weights and biases tensors
           const weights = layer.getWeights();
           if (weights.length === 0) {
             console.warn(`Layer ${i} has no weights yet`);
             continue; // Skip layers without weights
           }
-          
+
           const [weightsArray, biasArray] = weights;
-          
+
           // TensorFlow stores weights in a different format than our visualizer expects
           // For dense layers, weights are stored as [inputSize, outputSize] but we need [outputSize, inputSize]
           const weightsData = weightsArray.arraySync();
           const biases = biasArray.dataSync();
-          
+
           // Reshape weights to match our visualizer's expected format
           // Convert from [inputSize, outputSize] to [outputSize, inputSize]
           const outputSize = weightsData[0].length || weightsData.length;
-          const inputSize = weightsData.length ? (Array.isArray(weightsData[0]) ? weightsData.length : 1) : 0;
-          
+          const inputSize = weightsData.length
+            ? Array.isArray(weightsData[0])
+              ? weightsData.length
+              : 1
+            : 0;
+
           // Prepare formatted weights
           const formattedWeights = [];
-          
+
           // For 2D weights (most common case)
           if (Array.isArray(weightsData) && Array.isArray(weightsData[0])) {
             for (let j = 0; j < outputSize; j++) {
@@ -186,18 +203,18 @@ class MLP {
               }
               formattedWeights.push(neuronWeights);
             }
-          } 
+          }
           // For 1D weights (unusual, but handle it)
           else if (Array.isArray(weightsData)) {
             for (let j = 0; j < outputSize; j++) {
               formattedWeights.push([weightsData[j]]);
             }
           }
-          
+
           // Update network with formatted weights and biases
           this.network[i].weights = formattedWeights;
           this.network[i].biases = Array.from(biases);
-          
+
           // Log the first weight for debugging
           if (formattedWeights.length > 0 && formattedWeights[0].length > 0) {
             console.log(`Layer ${i} first weight: ${formattedWeights[0][0]}`);
@@ -205,83 +222,88 @@ class MLP {
         }
       }
     } catch (error) {
-      console.error("Error updating network weights:", error);
+      console.error('Error updating network weights:', error);
     }
   }
-  
+
   /**
    * Forward pass through the network
    */
   forward(input) {
     // Convert input to tensor
     const inputTensor = tf.tensor2d([input]);
-    
+
     // Get prediction
     const predictionTensor = this.model.predict(inputTensor);
-    
+
     // Convert to JavaScript array
     const prediction = Array.from(predictionTensor.dataSync());
-    
+
     // Clean up tensors
     inputTensor.dispose();
     predictionTensor.dispose();
-    
+
     return prediction;
   }
-  
+
   /**
    * Compute Mean Squared Error loss
    */
   computeLoss(predicted, actual) {
     const predictedTensor = tf.tensor1d(predicted);
     const actualTensor = tf.tensor1d(actual);
-    
+
     const loss = tf.losses.meanSquaredError(actualTensor, predictedTensor).dataSync()[0];
-    
+
     // Clean up tensors
     predictedTensor.dispose();
     actualTensor.dispose();
-    
+
     return loss;
   }
-  
+
   /**
    * Train the network using a dataset
    */
   async train(dataset, epochs, learningRate = 0.03, callback = null) {
     // Update learning rate
     this.learningRate = learningRate;
-    
+
     // Reset history
     this.history.loss = [];
     this.history.accuracy = [];
     this.history.mae = [];
     this.history.epochs = 0;
-    
+
     // Update optimizer with new learning rate
     const isSineWave = this.inputSize === 1 && this.outputSize === 1;
+    const isMultiClass = this.outputSize > 1;
     let optimizer;
     if (isSineWave) {
       optimizer = tf.train.adam(this.learningRate * 0.5);
     } else {
       optimizer = tf.train.adam(this.learningRate);
     }
-    
+
     this.model.compile({
       optimizer: optimizer,
-      loss: 'meanSquaredError',
-      metrics: isSineWave ? ['mae'] : ['accuracy']
+      loss: isSineWave
+        ? 'meanSquaredError'
+        : isMultiClass
+        ? 'categoricalCrossentropy'
+        : 'meanSquaredError',
+      metrics: isSineWave ? ['mae'] : ['accuracy'],
     });
-    
+
     try {
       // Process dataset based on input dimensions
       let inputs, outputs;
-      
+
       if (this.inputSize === 1 && dataset[0].input.length === 1) {
         // Special handling for 1D data like sine wave
         const inputValues = dataset.map(d => d.input[0]);
         const outputValues = dataset.map(d => d.output[0]);
-        
+
         inputs = tf.tensor2d(inputValues, [inputValues.length, 1]);
         outputs = tf.tensor2d(outputValues, [outputValues.length, 1]);
       } else {
@@ -289,13 +311,13 @@ class MLP {
         inputs = tf.tensor2d(dataset.map(d => d.input));
         outputs = tf.tensor2d(dataset.map(d => d.output));
       }
-    
+
       // Train for each epoch manually so we can provide updates
       for (let epoch = 0; epoch < epochs; epoch++) {
         // Single training step
         const result = await this.model.trainOnBatch(inputs, outputs);
         const loss = result[0];
-        
+
         // Store appropriate metric based on task type
         if (isSineWave) {
           const mae = result[1]; // mae is the second metric
@@ -312,26 +334,26 @@ class MLP {
             callback(epoch, loss, accuracy, false); // false indicates this is accuracy, not MAE
           }
         }
-        
+
         // Update common history
         this.history.loss.push(loss);
         this.history.epochs++;
-        
+
         // Update network weights for visualization
         this.updateNetworkWeights();
       }
-      
+
       // Clean up tensors
       inputs.dispose();
       outputs.dispose();
-      
+
       return this.history;
     } catch (error) {
-      console.error("Error during training:", error);
+      console.error('Error during training:', error);
       throw error;
     }
   }
-  
+
   /**
    * Predict output for a given input
    */
@@ -339,7 +361,7 @@ class MLP {
     // Handle both single examples and arrays of examples
     const isArray = Array.isArray(input[0]);
     let inputTensor;
-    
+
     // Special handling for 1D inputs (like sine wave)
     if (this.inputSize === 1 && !isArray) {
       // For 1D input, ensure proper tensor shape
@@ -351,10 +373,10 @@ class MLP {
       // Single example, convert to batch of 1
       inputTensor = tf.tensor2d([input]);
     }
-    
+
     // Get prediction
     const predictionTensor = this.model.predict(inputTensor);
-    
+
     // Convert to JavaScript array
     let prediction;
     if (isArray) {
@@ -364,29 +386,25 @@ class MLP {
       // Return single prediction
       prediction = Array.from(predictionTensor.dataSync());
     }
-    
+
     // Clean up tensors
     inputTensor.dispose();
     predictionTensor.dispose();
-    
+
     return prediction;
   }
-  
+
   /**
    * Get network architecture for visualization
    */
   getNetworkStructure() {
     return {
-      layers: [
-        this.inputSize,
-        ...this.hiddenLayers,
-        this.outputSize
-      ],
+      layers: [this.inputSize, ...this.hiddenLayers, this.outputSize],
       weights: this.network.map(layer => layer.weights),
-      biases: this.network.map(layer => layer.biases)
+      biases: this.network.map(layer => layer.biases),
     };
   }
 }
 
 // Export the MLP class
-export default MLP; 
+export default MLP;
