@@ -1,0 +1,30 @@
+# Codespell ignore words file
+
+# Technical terms that might be flagged incorrectly
+aks
+crate
+hist
+inout
+nam
+nd
+pixmap
+parm
+parms
+substitue
+tim
+tage
+wanna
+
+# Project-specific terms
+notnull
+thru
+mlp
+
+# Common file paths, names, and code that should be ignored
+node_modules/
+dist/
+build/
+.git/
+.github/
+__pycache__/
+*.min.js

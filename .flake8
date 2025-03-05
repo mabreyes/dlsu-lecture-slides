@@ -1,0 +1,45 @@
+[flake8]
+# Maximum line length
+max-line-length = 88
+extend-ignore = E203
+
+# Exclude patterns
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    node_modules,
+    venv,
+    .env,
+    .venv,
+    env
+
+# Plugins
+doctests = True
+max-complexity = 10
+statistics = True
+count = True
+
+# Docstring conventions
+docstring-convention = google
+
+# Error codes to ignore
+ignore =
+    # whitespace before ':' - Black handles this
+    E203,
+    # line break before binary operator - Black handles this
+    W503,
+    # line break after binary operator - Black handles this
+    W504,
+    # line too long - Let Black handle this
+    E501,
+    # module level import not at top of file - Sometimes necessary
+    E402,
+    # do not assign a lambda expression, use a def - Sometimes lambda is clearer
+    E731
+
+# Per-file-ignores
+per-file-ignores =
+    # Ignore unused imports in __init__.py files
+    __init__.py:F401

@@ -21,17 +21,20 @@ An interactive visualization tool for understanding Multilayer Perceptrons (MLPs
 ### Installation
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/yourusername/mlp-visualizer.git
    cd mlp-visualizer
    ```
 
 2. Install dependencies:
+
    ```
    npm install
    ```
 
 3. Start the development server:
+
    ```
    npm run dev
    ```
@@ -87,6 +90,7 @@ The project is implemented using:
 - **Webpack**: For bundling and development workflow
 
 The neural network is implemented from scratch, including:
+
 - Forward propagation
 - Backpropagation
 - Weight updates
@@ -110,3 +114,29 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - This project was inspired by educational resources on neural networks
 - Special thanks to all contributors and the open-source community
+
+# Pre-Commit Setup
+
+## Installation
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install the hooks
+pre-commit install
+```
+
+## Usage
+
+- Hooks run automatically on `git commit`
+- Run manually: `pre-commit run --all-files`
+- Skip hooks (use sparingly): `git commit -m "Message" --no-verify`
+
+## Included Hooks
+
+- **All Files**: Whitespace/EOF fixes, spell checking
+- **Markdown**: markdownlint
+- **Python**: Black, isort, Flake8, mypy, Bandit
+- **JavaScript**: ESLint, Prettier
+- **Tests**: npm tests, pytest
