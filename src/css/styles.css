@@ -277,6 +277,8 @@ button {
   gap: 0.5rem;
   position: relative;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
 }
 
 button::before {
