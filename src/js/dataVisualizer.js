@@ -268,7 +268,7 @@ class DataVisualizer {
     const yExtent = d3.extent(yValues);
     
     const xPadding = (xExtent[1] - xExtent[0]) * 0.1;
-    const yPadding = Math.max((yExtent[1] - yExtent[0]) * 0.1, 0.1);
+    const yPadding = (yExtent[1] - yExtent[0]) * 0.1 || 0.1;
     
     this.xScale = d3.scaleLinear()
       .domain([xExtent[0] - xPadding, xExtent[1] + xPadding])
@@ -301,55 +301,62 @@ class DataVisualizer {
       .attr("class", "data-point")
       .attr("cx", d => this.xScale(d.input[0]))
       .attr("cy", d => this.yScale(d.output[0]))
-      .attr("r", 4)
+      .attr("r", 3)
       .style("fill", "#3498db")
       .style("stroke", "#fff")
-      .style("stroke-width", 1)
-      .style("opacity", 0.8);
+      .style("stroke-width", 1);
     
-    // If we have a model, render predictions
+    // If we have a model, render the predictions
     if (this.model) {
-      this.renderPredictionLine(plot);
+      this.renderCurve(plot);
     }
   }
   
   /**
-   * Render prediction line for 1D function approximation
+   * Render predicted curve for 1D function approximation
    */
-  renderPredictionLine(plot) {
-    // Generate predictions on a range of inputs
-    const xDomain = this.xScale.domain();
-    const numPoints = 100;
-    const xStep = (xDomain[1] - xDomain[0]) / numPoints;
-    
-    const predictionData = [];
-    
-    for (let x = xDomain[0]; x <= xDomain[1]; x += xStep) {
-      const prediction = this.model.predict([x])[0];
-      predictionData.push({
-        x,
-        y: prediction
-      });
+  renderCurve(plot) {
+    try {
+      // Create a set of points along the x-axis for predictions
+      const numPoints = 100;
+      const xDomain = this.xScale.domain();
+      const xStep = (xDomain[1] - xDomain[0]) / numPoints;
+      
+      // Generate points and get predictions
+      const curvePoints = [];
+      for (let x = xDomain[0]; x <= xDomain[1]; x += xStep) {
+        try {
+          // Get prediction for this x value
+          const prediction = this.model.predict([x]);
+          const predictedY = prediction[0];
+          
+          curvePoints.push({
+            x: x,
+            y: predictedY
+          });
+        } catch (error) {
+          console.error("Error making prediction:", error);
+        }
+      }
+      
+      // Define line generator
+      const lineGenerator = d3.line()
+        .x(d => this.xScale(d.x))
+        .y(d => this.yScale(d.y))
+        .curve(d3.curveBasis);
+      
+      // Add the curve
+      plot.append("path")
+        .datum(curvePoints)
+        .attr("class", "prediction-curve")
+        .attr("fill", "none")
+        .attr("stroke", "#e74c3c")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "4,2")
+        .attr("d", lineGenerator);
+    } catch (error) {
+      console.error("Error rendering prediction curve:", error);
     }
-    
-    // Sort prediction data by x for a clean line
-    predictionData.sort((a, b) => a.x - b.x);
-    
-    // Create line generator
-    const line = d3.line()
-      .x(d => this.xScale(d.x))
-      .y(d => this.yScale(d.y))
-      .curve(d3.curveMonotoneX);
-    
-    // Draw prediction line
-    plot.append("path")
-      .datum(predictionData)
-      .attr("class", "prediction-line")
-      .attr("fill", "none")
-      .attr("stroke", "#e74c3c")
-      .attr("stroke-width", 2)
-      .attr("stroke-dasharray", "5,5")
-      .attr("d", line);
   }
   
   /**

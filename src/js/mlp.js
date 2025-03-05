@@ -44,6 +44,9 @@ class MLP {
     // Map activation function name to TensorFlow.js activation
     const tfActivation = this.mapActivation(this.activation);
     
+    // Special configuration for sine wave (1D input)
+    const isSineWave = this.inputSize === 1 && this.outputSize === 1;
+    
     // Create each layer
     for (let i = 0; i < layerSizes.length - 1; i++) {
       const inputSize = layerSizes[i];
@@ -53,8 +56,19 @@ class MLP {
       const isFirstLayer = i === 0;
       const isOutputLayer = i === layerSizes.length - 2;
       
-      // Use sigmoid for binary classification output, otherwise use the specified activation
-      const activationFn = isOutputLayer ? 'sigmoid' : tfActivation;
+      // Use sigmoid for binary classification output, tanh for sine wave
+      // otherwise use the specified activation
+      let activationFn = tfActivation;
+      
+      if (isOutputLayer) {
+        if (isSineWave) {
+          // For sine wave, tanh is better since output is between -1 and 1
+          activationFn = 'tanh';
+        } else {
+          // For classification, sigmoid is better
+          activationFn = 'sigmoid';
+        }
+      }
       
       // Use a custom initializer to ensure more visible weights in visualization
       const layer = tf.layers.dense({
@@ -81,9 +95,18 @@ class MLP {
       });
     }
     
+    // Adjust optimizer for sine wave
+    let optimizer;
+    if (isSineWave) {
+      // For function approximation, a more robust optimizer with lower learning rate
+      optimizer = tf.train.adam(this.learningRate * 0.5);
+    } else {
+      optimizer = tf.train.adam(this.learningRate);
+    }
+    
     // Compile the model
     this.model.compile({
-      optimizer: tf.train.adam(this.learningRate),
+      optimizer: optimizer,
       loss: 'meanSquaredError',
       metrics: ['accuracy']
     });
@@ -237,38 +260,55 @@ class MLP {
       metrics: ['accuracy']
     });
     
-    // Convert dataset to tensors
-    const inputs = tf.tensor2d(dataset.map(d => d.input));
-    const outputs = tf.tensor2d(dataset.map(d => d.output));
+    try {
+      // Process dataset based on input dimensions
+      let inputs, outputs;
+      
+      if (this.inputSize === 1 && dataset[0].input.length === 1) {
+        // Special handling for 1D data like sine wave
+        const inputValues = dataset.map(d => d.input[0]);
+        const outputValues = dataset.map(d => d.output[0]);
+        
+        inputs = tf.tensor2d(inputValues, [inputValues.length, 1]);
+        outputs = tf.tensor2d(outputValues, [outputValues.length, 1]);
+      } else {
+        // Regular handling for other datasets
+        inputs = tf.tensor2d(dataset.map(d => d.input));
+        outputs = tf.tensor2d(dataset.map(d => d.output));
+      }
     
-    // Train for each epoch manually so we can provide updates
-    for (let epoch = 0; epoch < epochs; epoch++) {
-      // Single training step
-      const result = await this.model.trainOnBatch(inputs, outputs);
-      const loss = result[0];
-      const accuracy = result.length > 1 ? result[1] : undefined;
-      
-      // Update history
-      this.history.loss.push(loss);
-      if (accuracy !== undefined) {
-        this.history.accuracy.push(accuracy);
+      // Train for each epoch manually so we can provide updates
+      for (let epoch = 0; epoch < epochs; epoch++) {
+        // Single training step
+        const result = await this.model.trainOnBatch(inputs, outputs);
+        const loss = result[0];
+        const accuracy = result.length > 1 ? result[1] : undefined;
+        
+        // Update history
+        this.history.loss.push(loss);
+        if (accuracy !== undefined) {
+          this.history.accuracy.push(accuracy);
+        }
+        this.history.epochs++;
+        
+        // Update network weights for visualization
+        this.updateNetworkWeights();
+        
+        // Call callback if provided
+        if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
+          callback(epoch, loss, accuracy);
+        }
       }
-      this.history.epochs++;
       
-      // Update network weights for visualization
-      this.updateNetworkWeights();
+      // Clean up tensors
+      inputs.dispose();
+      outputs.dispose();
       
-      // Call callback if provided
-      if (callback && (epoch % 10 === 0 || epoch === epochs - 1)) {
-        callback(epoch, loss, accuracy);
-      }
+      return this.history;
+    } catch (error) {
+      console.error("Error during training:", error);
+      throw error;
     }
-    
-    // Clean up tensors
-    inputs.dispose();
-    outputs.dispose();
-    
-    return this.history;
   }
   
   /**
@@ -279,7 +319,11 @@ class MLP {
     const isArray = Array.isArray(input[0]);
     let inputTensor;
     
-    if (isArray) {
+    // Special handling for 1D inputs (like sine wave)
+    if (this.inputSize === 1 && !isArray) {
+      // For 1D input, ensure proper tensor shape
+      inputTensor = tf.tensor2d([input], [1, input.length]);
+    } else if (isArray) {
       // Input is already a batch of examples
       inputTensor = tf.tensor2d(input);
     } else {

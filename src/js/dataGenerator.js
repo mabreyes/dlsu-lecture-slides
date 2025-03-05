@@ -76,10 +76,10 @@ class DataGenerator {
   }
   
   /**
-   * Generate custom function data
+   * Generate sine wave data for function approximation
    * y = sin(x) in the range [-π, π]
    */
-  static generateSinusoidalData(n = 50) {
+  static generateSinusoidalData(n = 100) {
     const data = [];
     
     // Generate n points along x-axis
@@ -87,11 +87,33 @@ class DataGenerator {
       const x = (i / (n - 1)) * (2 * Math.PI) - Math.PI; // Range [-π, π]
       const y = Math.sin(x); // sin(x)
       
+      // Add some small noise to make training more robust
+      const noise = (Math.random() * 0.05) - 0.025;
+      
       data.push({
         input: [x],
-        output: [y]
+        output: [y + noise]
       });
     }
+    
+    // Add some extra points around critical areas (peaks and troughs)
+    const criticalPoints = [
+      { x: -Math.PI, y: Math.sin(-Math.PI) },
+      { x: -Math.PI/2, y: Math.sin(-Math.PI/2) },
+      { x: 0, y: Math.sin(0) },
+      { x: Math.PI/2, y: Math.sin(Math.PI/2) },
+      { x: Math.PI, y: Math.sin(Math.PI) }
+    ];
+    
+    for (const point of criticalPoints) {
+      data.push({
+        input: [point.x],
+        output: [point.y]
+      });
+    }
+    
+    // Sort data by input value for better visualization
+    data.sort((a, b) => a.input[0] - b.input[0]);
     
     return data;
   }

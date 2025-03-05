@@ -171,17 +171,28 @@ class MLPVisualizerApp {
    * Set sinusoidal data for function approximation
    */
   setSinusoidalData() {
-    // Get sinusoidal data
-    this.trainingData = DataGenerator.generateSinusoidalData(50);
+    console.log("Setting sinusoidal data...");
+    
+    // Get sinusoidal data with more points for smoother visualization
+    this.trainingData = DataGenerator.generateSinusoidalData(100);
+    
+    // Log some data points for debugging
+    console.log("Sample sine data:", this.trainingData.slice(0, 3));
     
     // Update visualizer
     this.dataVisualizer.setData(this.trainingData, 'line');
     this.dataVisualizer.render();
     
-    // Update configuration
+    // Update configuration - make sure to reset the network for 1D input
     this.config.inputSize = 1;
     this.config.outputSize = 1;
+    this.config.hiddenLayers = [8, 8]; // More complex network for function approximation
+    
+    // Update UI and recreate network
     this.updateConfigUI();
+    this.createNetwork();
+    
+    console.log("Sinusoidal data setup complete");
   }
   
   /**
