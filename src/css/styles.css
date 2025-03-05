@@ -180,7 +180,7 @@ h2 {
 
 .control-panel:hover {
   box-shadow: var(--box-shadow-lg);
-  transform: translateY(-3px);
+  /* transform: translateY(-3px); */
 }
 
 .visualization-panel {
@@ -201,7 +201,7 @@ h2 {
 
 .network-visualization:hover, .data-visualization:hover {
   box-shadow: var(--box-shadow-lg);
-  transform: translateY(-3px);
+  /* transform: translateY(-3px); */
 }
 
 /* Card title with icon */
