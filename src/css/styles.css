@@ -561,11 +561,11 @@ footer a:hover {
   .navbar-links {
     gap: 12px;
   }
-  
+
   .navbar-text {
     display: none; /* Hide the text on smaller screens */
   }
-  
+
   .nav-link {
     padding: 6px 12px;
     font-size: 13px;

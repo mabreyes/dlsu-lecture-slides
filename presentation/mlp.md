@@ -170,9 +170,7 @@ math: true
 
 ---
 
-# Multilayer Perceptron (MLP)
-
-### The Building Blocks of Deep Learning
+# The Building Blocks of Deep Learning
 
 <!-- Replace background image with a consistent MLP diagram -->
 ```mermaid
@@ -238,6 +236,10 @@ flowchart LR
     class o1,o2 output
 ```
 
+---
+
+# The Building Blocks of Deep Learning
+
 - Foundation of modern neural networks
 - Versatile architecture for diverse problems
 - Combines simplicity with powerful learning capabilities
@@ -246,87 +248,37 @@ flowchart LR
 
 # From Neurons to Networks
 
-<!-- Replace image with a neuron-inspired diagram -->
 ```mermaid
 flowchart LR
-    %% Inputs with weights
+    %% Left-to-right flow
     x1[x₁] -- w₁ --> sum((Σ))
     x2[x₂] -- w₂ --> sum
     x3[x₃] -- w₃ --> sum
-    b[bias] -.-> sum
+    b((bias)) -.-> sum
 
-    %% Processing steps
-    sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
+    sum -- z --> af["Activation<br>Function"]
+    af -- a --> output[Output]
 
-    %% Annotations
-    x1 -.-> |"Inputs"| x2
-    w1 -.-> |"Weights"| w2
-    af -.-> |"f(z)=σ(z)"| af
+    %% Optional dotted annotations (if desired):
+    %% x1 -.-> |"Inputs"| x2
+    %% af -.-> |"f(z)=σ(z)"| af
 
     %% Styling
     classDef node fill:#f9f9f9,stroke:#999,color:#333
     classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
+
     class x1,x2,x3,output io
     class sum,af node
-
-    %% Label
-    subgraph "Artificial Neuron"
-        x1
-        x2
-        x3
-        sum
-        af
-        output
-        b
-    end
-    classDef neurongroup fill:none,stroke:#666
 ```
-
-- **Biological inspiration**: Mimics brain's neural structure
-  - Neurons receive, process, and transmit information
-- **Artificial neuron**: Weighted sum + activation function
-  - Processes inputs through mathematical operations
 
 ---
 
 # From Neurons to Networks
 
-<!-- Use the same neuron diagram for consistency -->
-```mermaid
-flowchart LR
-    %% Inputs with weights
-    x1[x₁] -- w₁ --> sum((Σ))
-    x2[x₂] -- w₂ --> sum
-    x3[x₃] -- w₃ --> sum
-    b[bias] -.-> sum
-
-    %% Processing steps
-    sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
-
-    %% Annotations
-    x1 -.-> |"Inputs"| x2
-    w1 -.-> |"Weights"| w2
-    af -.-> |"f(z)=σ(z)"| af
-
-    %% Styling
-    classDef node fill:#f9f9f9,stroke:#999,color:#333
-    classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
-    class x1,x2,x3,output io
-    class sum,af node
-
-    %% Label
-    subgraph "Artificial Neuron"
-        x1
-        x2
-        x3
-        sum
-        af
-        output
-        b
-    end
-    classDef neurongroup fill:none,stroke:#666
-```
-
+- **Biological inspiration**: Mimics brain's neural structure
+  - Neurons receive, process, and transmit information
+- **Artificial neuron**: Weighted sum + activation function
+  - Processes inputs through mathematical operations
 - **Network topology**: Input layer → Hidden layers → Output layer
   - Organized structure for information processing
 - **Information flow**: Forward propagation for predictions
@@ -464,6 +416,8 @@ flowchart LR
     class o1,o2 output
 ```
 
+---
+
 ## Key Components
 
 - **Input layer**: Raw data reception
@@ -541,7 +495,9 @@ flowchart LR
     class o1,o2 output
 ```
 
-## Key Components (continued)
+---
+
+## Key Components
 
 - **Weights & biases**: Learnable parameters
   - Adjusted during training to minimize error
@@ -853,6 +809,10 @@ flowchart LR
     class Theorem theorem
 ```
 
+---
+
+# Universal Approximation Theorem
+
 > "A feedforward network with a single hidden layer containing a finite number of neurons can approximate any continuous function, under mild assumptions on the activation function."
 
 - The theoretical foundation for MLP capabilities
@@ -993,7 +953,7 @@ D) All of the above
 
 # Practical Implementation Challenges
 
-## Poll: What's your biggest challenge with neural networks?
+## What's your biggest challenge with neural networks?
 
 - Understanding the math
 - Choosing the right architecture
@@ -1001,84 +961,15 @@ D) All of the above
 - Computational resources
 - Interpreting results
 
-*Share your thoughts in the chat!*
-
----
-
-# Practical Implementation
+*Share your thoughts!*
 
 ---
 
 # Thank You
 
-<!-- Replace image with the same MLP diagram as before -->
-```mermaid
-flowchart LR
-    %% Input layer with nodes
-    i1((x₁)) --> h1((h₁))
-    i2((x₂)) --> h1
-    i3((x₃)) --> h1
-    i1 --> h2((h₂))
-    i2 --> h2
-    i3 --> h2
-    i1 --> h3((h₃))
-    i2 --> h3
-    i3 --> h3
-
-    %% Hidden to output connections
-    h1 --> o1((ŷ₁))
-    h1 --> o2((ŷ₂))
-    h2 --> o1
-    h2 --> o2
-    h3 --> o1
-    h3 --> o2
-
-    %% Layer labels and grouping
-    subgraph Input["Input Layer"]
-        i1
-        i2
-        i3
-    end
-
-    subgraph Hidden["Hidden Layer"]
-        h1
-        h2
-        h3
-    end
-
-    subgraph Output["Output Layer"]
-        o1
-        o2
-    end
-
-    %% Include annotations
-    Input -.-> |"Features"| Input
-    Hidden -.-> |"Feature Extraction"| Hidden
-    Output -.-> |"Predictions"| Output
-
-    %% Adding weight labels to some connections
-    i1 --> |w₁₁| h1
-    h2 --> |w₂₁| o1
-
-    %% Styling
-    classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
-    classDef node fill:white,stroke:#333,stroke-width:1px
-    classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
-    classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
-    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-
-    class Input layer
-    class Hidden layer
-    class Output layer
-    class i1,i2,i3 input
-    class h1,h2,h3 hidden
-    class o1,o2 output
-```
-
 ## Contact Information
 
 - Email: [hi@marcr.xyz](mailto:hi@marcr.xyz)
-- Website: [marcr.xyz](https://marcr.xyz)
 
 ## Resources
 

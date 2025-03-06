@@ -14,7 +14,7 @@ module.exports = {
   devServer: {
     static: [
       './dist',
-      { directory: path.resolve(__dirname, 'presentation'), publicPath: '/presentation' }
+      { directory: path.resolve(__dirname, 'presentation'), publicPath: '/presentation' },
     ],
     hot: true,
   },
@@ -48,4 +48,4 @@ module.exports = {
       ],
     }),
   ],
-}; 
+};
