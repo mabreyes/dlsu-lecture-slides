@@ -328,7 +328,7 @@ button:disabled {
 #network-container,
 #data-container {
   width: 100%;
-  height: 350px;
+  height: 500px;
   border-radius: var(--border-radius-sm);
   overflow: hidden;
   transition: var(--transition);
