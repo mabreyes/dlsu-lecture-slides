@@ -1,0 +1,50 @@
+/* Styles for formula rendering in diagrams */
+
+/* Ensure formulas are visible */
+.mermaid text {
+  font-family: inherit;
+}
+
+/* Prevent overflow in formulas */
+.mermaid .label foreignObject {
+  overflow: visible !important;
+}
+
+/* Style for katex-rendered formulas */
+.katex {
+  font-size: 1em;
+  line-height: 1.2;
+}
+
+/* Ensure sigma and partial derivatives render properly */
+.katex .mord.mathnormal {
+  font-style: italic;
+}
+
+/* Fix for superscript and subscript */
+.katex .msupsub {
+  text-align: left;
+}
+
+/* Custom styling for formulas in specific diagram elements */
+.mermaid .flowchart-label .katex,
+.mermaid .label .katex {
+  color: inherit;
+}
+
+/* Fix for partial derivatives */
+.katex .mfrac {
+  vertical-align: -0.5em;
+}
+
+/* Ensure formula containers are properly sized */
+.formula-container {
+  overflow: visible !important;
+  max-width: none !important;
+}
+
+/* Center formula text */
+.formula-container div {
+  text-align: center;
+  font-size: 14px;
+}

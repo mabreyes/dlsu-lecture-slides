@@ -2,1149 +2,1074 @@
 marp: true
 theme: default
 paginate: true
-math: mathjax
+header: '**Multilayer Perceptrons** - Neural Network Fundamentals'
+style: |
+  @import url('./math-styles.css');
+  @import url('./formula-styles.css');
+
+  /* KaTeX styling for better formula rendering */
+  @import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
+
+  /* Improve math rendering in Mermaid diagrams */
+  .mermaid .label foreignObject {
+    overflow: visible !important;
+  }
+
+  /* Style enhancements for math in diagrams */
+  .mermaid text tspan {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+  }
+
+  /* Allow math to overflow properly */
+  .katex-display {
+    overflow: visible !important;
+    display: block;
+  }
+
+  /* Fix for math in diagram nodes */
+  .mermaid .label div.math {
+    display: inline-block;
+  }
+
+  /* Ensure math is centered in diagram nodes */
+  .mermaid .node .label {
+    text-align: center;
+  }
+
+  /* Add more padding around math in diagram nodes */
+  .mermaid .node {
+    padding: 10px;
+  }
+
+  /* Additional fixes for math in Mermaid diagrams */
+  .mermaid .label .katex {
+    font-size: 1em !important;
+  }
+
+  .mermaid .label .katex-html {
+    text-align: center;
+  }
+
+  /* Support for display math in Mermaid diagrams */
+  .mermaid .label .katex-display {
+    margin: 0.5em 0;
+  }
+math: true
 ---
 
-# Multilayer Perceptrons: Unraveling the Neural Network Powerhouse
+<!-- KaTeX and Mermaid Math Configuration -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false,
+          trust: true
+        });"></script>
+<script>
+  // Configure Mermaid to properly handle math
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        legacyMathML: true,
+        securityLevel: 'loose',
+        htmlLabels: true,
+        flowchart: {
+          htmlLabels: true,
+          useMaxWidth: false,
+          curve: 'basis'
+        }
+      });
+    }
+
+    // Function to re-render math after Mermaid renders diagrams
+    const renderMermaidMath = () => {
+      // Find all Mermaid diagram labels
+      const mermaidLabels = document.querySelectorAll('.mermaid .label');
+
+      mermaidLabels.forEach(label => {
+        // Check if the label contains math ($ signs)
+        if (label.textContent.includes('$')) {
+          try {
+            // Render math with KaTeX
+            renderMathInElement(label, {
+              delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+              ],
+              throwOnError: false,
+              output: 'html',
+              trust: true
+            });
+
+            // Fix positioning
+            const foreignObject = label.closest('foreignObject');
+            if (foreignObject) {
+              foreignObject.setAttribute('overflow', 'visible');
+              // Increase foreignObject size to accommodate display math
+              const width = parseInt(foreignObject.getAttribute('width') || 0);
+              const height = parseInt(foreignObject.getAttribute('height') || 0);
+              foreignObject.setAttribute('width', Math.max(width, 150));
+              foreignObject.setAttribute('height', Math.max(height, 60));
+            }
+          } catch (error) {
+            console.error('Failed to render math:', error);
+          }
+        }
+      });
+    };
+
+    // Run initial render
+    setTimeout(renderMermaidMath, 1000);
+    // Run another render after diagrams are fully loaded
+    setTimeout(renderMermaidMath, 2000);
+
+    // Set up mutation observer to handle dynamically rendered diagrams
+    const observer = new MutationObserver(mutations => {
+      let mermaidDetected = false;
+
+      mutations.forEach(mutation => {
+        // Check if any added nodes contain a Mermaid diagram
+        if (mutation.addedNodes.length) {
+          mutation.addedNodes.forEach(node => {
+            if (node.classList && node.classList.contains('mermaid')) {
+              mermaidDetected = true;
+            }
+          });
+        }
+      });
+
+      // If we found a new Mermaid diagram, re-render math
+      if (mermaidDetected) {
+        setTimeout(renderMermaidMath, 500);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  });
+</script>
+
+# Multilayer Perceptron (MLP)
+## Neural Network Fundamentals
+### A Comprehensive Introduction
+
+**Marc Reyes**
+*Lecturer*
+*March 7, 2025*
 
 ---
 
-## Learning Objectives
+# Multilayer Perceptron (MLP)
+### The Building Blocks of Deep Learning
 
-By the end of this presentation, you will be able to:
-
-- Understand the basic architecture and mathematics of Multilayer Perceptrons
-- Explain the significance of activation functions and backpropagation
-- Compare implementation approaches using raw Python vs. frameworks like TensorFlow
-- Evaluate when to use different implementation strategies
-- Apply MLPs to solve real-world problems
-
----
-
-## Table of Contents
-
-### Theory
-- What is an MLP?
-- Mathematical representation
-- Architecture
-- Backpropagation
-
-### Practice
-- Implementation approaches
-- Python vs TensorFlow
-- Applications
-- Interactive challenges
-- Future directions
-
----
-
-## Multilayer Perceptrons: The Building Blocks of Deep Learning
-
+<!-- Replace background image with a consistent MLP diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "MLP Architecture"
-        A["Input Layer"] --> B["Hidden Layers"]
-        B --> C["Output Layer"]
+    %% Input layer with nodes
+    i1((x₁)) --> h1((h₁))
+    i2((x₂)) --> h1
+    i3((x₃)) --> h1
+    i1 --> h2((h₂))
+    i2 --> h2
+    i3 --> h2
+    i1 --> h3((h₃))
+    i2 --> h3
+    i3 --> h3
+
+    %% Hidden to output connections
+    h1 --> o1((ŷ₁))
+    h1 --> o2((ŷ₂))
+    h2 --> o1
+    h2 --> o2
+    h3 --> o1
+    h3 --> o2
+
+    %% Layer labels and grouping
+    subgraph Input["Input Layer"]
+        i1
+        i2
+        i3
     end
-    style A fill:#ff9f43
-    style B fill:#2ecc71
-    style C fill:#54a0ff
+
+    subgraph Hidden["Hidden Layer"]
+        h1
+        h2
+        h3
+    end
+
+    subgraph Output["Output Layer"]
+        o1
+        o2
+    end
+
+    %% Include annotations
+    Input -.-> |"Features"| Input
+    Hidden -.-> |"Feature Extraction"| Hidden
+    Output -.-> |"Predictions"| Output
+
+    %% Adding weight labels to some connections
+    i1 --> |w₁₁| h1
+    h2 --> |w₂₁| o1
+
+    %% Styling
+    classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
+    classDef node fill:white,stroke:#333,stroke-width:1px
+    classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+
+    class Input layer
+    class Hidden layer
+    class Output layer
+    class i1,i2,i3 input
+    class h1,h2,h3 hidden
+    class o1,o2 output
 ```
 
----
-
-## What is a Multilayer Perceptron?
-
-- Definition: An MLP is a class of feedforward artificial neural network
-- Key features:
-  - Multiple layers of perceptrons
-  - Nonlinear activation functions
-  - Fully connected architecture
+- Foundation of modern neural networks
+- Versatile architecture for diverse problems
+- Combines simplicity with powerful learning capabilities
 
 ---
 
-## MLP: Basic Structure
+# From Neurons to Networks
 
+<!-- Replace image with a neuron-inspired diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "MLP Architecture" 
-        subgraph "Input Layer"
-            I1((I1))
-            I2((I2))
-            I3((I3))
-        end
-        subgraph "Hidden Layer"
-            H1((H1))
-            H2((H2))
-            H3((H3))
-        end
-        subgraph "Output Layer"
-            O1((O1))
-            O2((O2))
-        end
-        I1 & I2 & I3 --> H1 & H2 & H3 --> O1 & O2
+    %% Inputs with weights
+    x1[x₁] -- w₁ --> sum((Σ))
+    x2[x₂] -- w₂ --> sum
+    x3[x₃] -- w₃ --> sum
+    b[bias] -.-> sum
+
+    %% Processing steps
+    sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
+
+    %% Annotations
+    x1 -.-> |"Inputs"| x2
+    w1 -.-> |"Weights"| w2
+    af -.-> |"f(z)=σ(z)"| af
+
+    %% Styling
+    classDef node fill:#f9f9f9,stroke:#999,color:#333
+    classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
+    class x1,x2,x3,output io
+    class sum,af node
+
+    %% Label
+    subgraph "Artificial Neuron"
+        x1
+        x2
+        x3
+        sum
+        af
+        output
+        b
     end
-    style I1 fill:#ff9f43
-    style I2 fill:#ff9f43
-    style I3 fill:#ff9f43
-    style H1 fill:#2ecc71
-    style H2 fill:#2ecc71
-    style H3 fill:#2ecc71
-    style O1 fill:#54a0ff
-    style O2 fill:#54a0ff
+    classDef neurongroup fill:none,stroke:#666
 ```
 
+- **Biological inspiration**: Mimics brain's neural structure
+  - Neurons receive, process, and transmit information
+- **Artificial neuron**: Weighted sum + activation function
+  - Processes inputs through mathematical operations
+
 ---
 
-## Mathematical Representation of an MLP Neuron
+# From Neurons to Networks (cont.)
 
-$$f(x) = \phi\left(\sum_{i=1}^n w_i x_i + b\right)$$
+<!-- Use the same neuron diagram for consistency -->
+```mermaid
+flowchart LR
+    %% Inputs with weights
+    x1[x₁] -- w₁ --> sum((Σ))
+    x2[x₂] -- w₂ --> sum
+    x3[x₃] -- w₃ --> sum
+    b[bias] -.-> sum
+
+    %% Processing steps
+    sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
+
+    %% Annotations
+    x1 -.-> |"Inputs"| x2
+    w1 -.-> |"Weights"| w2
+    af -.-> |"f(z)=σ(z)"| af
+
+    %% Styling
+    classDef node fill:#f9f9f9,stroke:#999,color:#333
+    classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
+    class x1,x2,x3,output io
+    class sum,af node
+
+    %% Label
+    subgraph "Artificial Neuron"
+        x1
+        x2
+        x3
+        sum
+        af
+        output
+        b
+    end
+    classDef neurongroup fill:none,stroke:#666
+```
+
+- **Network topology**: Input layer → Hidden layers → Output layer
+  - Organized structure for information processing
+- **Information flow**: Forward propagation for predictions
+  - Data travels from input to output through the network
+
+---
+
+# The Perceptron Journey
+
+<!-- Replace image with a timeline/gantt chart diagram -->
+```mermaid
+timeline
+    title Neural Network Evolution
+    section 1950s-1960s
+        1957: Perceptron proposed by Frank Rosenblatt
+        1958: First implementation of neural learning algorithm
+        1969: "Perceptrons" book by Minsky & Papert exposed XOR limitation
+    section 1970s-1980s
+        1974: Backpropagation developed (Werbos)
+        1986: Backpropagation popularized by Rumelhart, Hinton & Williams
+        1989: Universal approximation theorem proven
+    section 1990s-2000s
+        1998: LeNet-5 for digit recognition
+        1999: Vanishing gradient problem identified
+        2006: Deep learning breakthrough (Hinton)
+    section 2010s+
+        2012: AlexNet revolutionizes computer vision
+        2014: GANs introduced
+        2017: Transformer architecture
+        2025: Modern advancements continue
+```
+
+- **1958**: Rosenblatt's single-layer perceptron
+  - First implementation of a neural learning algorithm
+- **1969**: Minsky & Papert expose limitations (XOR problem)
+  - Demonstrated that single-layer networks couldn't solve nonlinear problems
+
+---
+
+# The Perceptron Journey (cont.)
+
+<!-- Use the same perceptron journey diagram -->
+```mermaid
+timeline
+    title Neural Network Evolution
+    section 1950s-1960s
+        1957: Perceptron proposed by Frank Rosenblatt
+        1958: First implementation of neural learning algorithm
+        1969: "Perceptrons" book by Minsky & Papert exposed XOR limitation
+    section 1970s-1980s
+        1974: Backpropagation developed (Werbos)
+        1986: Backpropagation popularized by Rumelhart, Hinton & Williams
+        1989: Universal approximation theorem proven
+    section 1990s-2000s
+        1998: LeNet-5 for digit recognition
+        1999: Vanishing gradient problem identified
+        2006: Deep learning breakthrough (Hinton)
+    section 2010s+
+        2012: AlexNet revolutionizes computer vision
+        2014: GANs introduced
+        2017: Transformer architecture
+        2025: Modern advancements continue
+```
+
+- **1986**: Rumelhart, Hinton & Williams introduce backpropagation
+  - Breakthrough algorithm enabling training of multi-layer networks
+- **Today**: Foundation for advanced architectures (CNNs, RNNs, Transformers)
+  - Core concepts extended to specialized network designs
+
+---
+
+# MLP Architecture
+
+<!-- Replace image with an MLP architecture diagram -->
+```mermaid
+flowchart LR
+    %% Input layer with nodes
+    i1((x₁)) --> h1((h₁))
+    i2((x₂)) --> h1
+    i3((x₃)) --> h1
+    i1 --> h2((h₂))
+    i2 --> h2
+    i3 --> h2
+    i1 --> h3((h₃))
+    i2 --> h3
+    i3 --> h3
+
+    %% Hidden to output connections
+    h1 --> o1((ŷ₁))
+    h1 --> o2((ŷ₂))
+    h2 --> o1
+    h2 --> o2
+    h3 --> o1
+    h3 --> o2
+
+    %% Layer labels and grouping
+    subgraph Input["Input Layer"]
+        i1
+        i2
+        i3
+    end
+
+    subgraph Hidden["Hidden Layer"]
+        h1
+        h2
+        h3
+    end
+
+    subgraph Output["Output Layer"]
+        o1
+        o2
+    end
+
+    %% Include annotations
+    Input -.-> |"Features"| Input
+    Hidden -.-> |"Feature Extraction"| Hidden
+    Output -.-> |"Predictions"| Output
+
+    %% Adding weight labels to some connections
+    i1 --> |w₁₁| h1
+    h2 --> |w₂₁| o1
+
+    %% Styling
+    classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
+    classDef node fill:white,stroke:#333,stroke-width:1px
+    classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+
+    class Input layer
+    class Hidden layer
+    class Output layer
+    class i1,i2,i3 input
+    class h1,h2,h3 hidden
+    class o1,o2 output
+```
+
+## Key Components:
+- **Input layer**: Raw data reception
+  - Receives and standardizes input features
+- **Hidden layers**: Feature extraction and transformation
+  - Learns hierarchical representations of data
+- **Output layer**: Final prediction/classification
+  - Produces the network's answer to the given problem
+
+---
+
+# MLP Architecture (cont.)
+
+<!-- Use the same MLP architecture diagram to remain consistent -->
+```mermaid
+flowchart LR
+    %% Input layer with nodes
+    i1((x₁)) --> h1((h₁))
+    i2((x₂)) --> h1
+    i3((x₃)) --> h1
+    i1 --> h2((h₂))
+    i2 --> h2
+    i3 --> h2
+    i1 --> h3((h₃))
+    i2 --> h3
+    i3 --> h3
+
+    %% Hidden to output connections
+    h1 --> o1((ŷ₁))
+    h1 --> o2((ŷ₂))
+    h2 --> o1
+    h2 --> o2
+    h3 --> o1
+    h3 --> o2
+
+    %% Layer labels and grouping
+    subgraph Input["Input Layer"]
+        i1
+        i2
+        i3
+    end
+
+    subgraph Hidden["Hidden Layer"]
+        h1
+        h2
+        h3
+    end
+
+    subgraph Output["Output Layer"]
+        o1
+        o2
+    end
+
+    %% Include annotations
+    Input -.-> |"Features"| Input
+    Hidden -.-> |"Feature Extraction"| Hidden
+    Output -.-> |"Predictions"| Output
+
+    %% Adding weight labels to some connections
+    i1 --> |w₁₁| h1
+    h2 --> |w₂₁| o1
+
+    %% Styling
+    classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
+    classDef node fill:white,stroke:#333,stroke-width:1px
+    classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+
+    class Input layer
+    class Hidden layer
+    class Output layer
+    class i1,i2,i3 input
+    class h1,h2,h3 hidden
+    class o1,o2 output
+```
+
+## Key Components (continued):
+- **Weights & biases**: Learnable parameters
+  - Adjusted during training to minimize error
+- **Activation functions**: Introduce non-linearity
+  - Enable the network to learn complex patterns
+
+---
+
+# Activation Functions
+
+<!-- Replace image with an activation functions diagram -->
+```mermaid
+flowchart TD
+    %% Main activation function node with branches
+    Root["Activation Functions"] --- SigClass["Sigmoid Class"]
+    Root --- ReLUClass["ReLU Class"]
+    Root --- OtherClass["Other Functions"]
+
+    %% Sigmoid class activations - Using correct LaTeX notation
+    SigClass --- Sigmoid["Sigmoid<br/>$$\sigma(x) = \frac{1}{1+e^{-x}}$$"]
+    SigClass --- Tanh["Tanh<br/>$$\tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}}$$"]
+
+    %% ReLU class activations - Using correct LaTeX notation
+    ReLUClass --- ReLU["ReLU<br/>$$f(x) = \max(0,x)$$"]
+    ReLUClass --- LeakyReLU["Leaky ReLU<br/>$$f(x) = \max(0.01x, x)$$"]
+    ReLUClass --- PReLU["Parametric ReLU<br/>$$f(x) = \max(\alpha x, x)$$"]
+
+    %% Other activation functions - Using correct LaTeX notation
+    OtherClass --- Softmax["Softmax<br/>$$\sigma(x_i) = \frac{e^{x_i}}{\sum e^{x_j}}$$"]
+    OtherClass --- GELU["GELU<br/>$$f(x) = x\cdot\Phi(x)$$"]
+
+    %% Styling
+    classDef root fill:#f5f5f5,stroke:#666,stroke-width:2px,color:#333,rx:5px,ry:5px
+    classDef category fill:#e1f5fe,stroke:#0277bd,color:#0277bd,rx:5px,ry:5px
+    classDef function fill:#fff,stroke:#999,color:#333,rx:5px,ry:5px,padding:15px
+
+    class Root root
+    class SigClass,ReLUClass,OtherClass category
+    class Sigmoid,Tanh,ReLU,LeakyReLU,PReLU,Softmax,GELU function
+```
+
+| Function      | Formula                                               | Characteristics                     |
+|---------------|-------------------------------------------------------|-------------------------------------|
+| Sigmoid       | $\sigma(x) = \frac{1}{1+e^{-x}}$                       | Output range [0,1], vanishing gradient |
+| Tanh          | $\tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}}$             | Output range [-1,1], zero-centered    |
+
+---
+
+# Activation Functions (cont.)
+
+<!-- Use the same activation functions diagram -->
+```mermaid
+flowchart TD
+    %% Main activation function node with branches
+    Root["Activation Functions"] --- SigClass["Sigmoid Class"]
+    Root --- ReLUClass["ReLU Class"]
+    Root --- OtherClass["Other Functions"]
+
+    %% Sigmoid class activations - Using correct LaTeX notation
+    SigClass --- Sigmoid["Sigmoid<br/>$$\sigma(x) = \frac{1}{1+e^{-x}}$$"]
+    SigClass --- Tanh["Tanh<br/>$$\tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}}$$"]
+
+    %% ReLU class activations - Using correct LaTeX notation
+    ReLUClass --- ReLU["ReLU<br/>$$f(x) = \max(0,x)$$"]
+    ReLUClass --- LeakyReLU["Leaky ReLU<br/>$$f(x) = \max(0.01x, x)$$"]
+    ReLUClass --- PReLU["Parametric ReLU<br/>$$f(x) = \max(\alpha x, x)$$"]
+
+    %% Other activation functions - Using correct LaTeX notation
+    OtherClass --- Softmax["Softmax<br/>$$\sigma(x_i) = \frac{e^{x_i}}{\sum e^{x_j}}$$"]
+    OtherClass --- GELU["GELU<br/>$$f(x) = x\cdot\Phi(x)$$"]
+
+    %% Styling
+    classDef root fill:#f5f5f5,stroke:#666,stroke-width:2px,color:#333,rx:5px,ry:5px
+    classDef category fill:#e1f5fe,stroke:#0277bd,color:#0277bd,rx:5px,ry:5px
+    classDef function fill:#fff,stroke:#999,color:#333,rx:5px,ry:5px,padding:15px
+
+    class Root root
+    class SigClass,ReLUClass,OtherClass category
+    class Sigmoid,Tanh,ReLU,LeakyReLU,PReLU,Softmax,GELU function
+```
+
+| Function      | Formula                                               | Characteristics                          |
+|---------------|-------------------------------------------------------|------------------------------------------|
+| ReLU          | $f(x) = \max(0,x)$                                    | Computationally efficient, sparse activation |
+| Leaky ReLU    | $f(x) = \max(0.01x, x)$                                | Prevents dying ReLU problem              |
+
+---
+
+# Forward Propagation
+
+<!-- Replace image with a forward propagation diagram -->
+```mermaid
+flowchart LR
+    %% Forward pass nodes
+    x["Input<br/>X"] --> z1["Forward<br/>Propagation"]
+    z1 --> a1["Hidden<br/>Activation"]
+    a1 --> z2["Forward<br/>Propagation"]
+    z2 --> a2["Output<br/>Activation"]
+    a2 --> yhat["Prediction<br/>ŷ"]
+
+    %% Error calculation
+    yhat --> error["Loss<br/>L(ŷ,y)"]
+    y["Actual<br/>y"] --> error
+
+    %% Backward pass nodes with correct LaTeX notation
+    error --> gradL["$$\frac{\partial L}{\partial \hat{y}}$$"]
+    gradL --> gradZ2["$$\frac{\partial L}{\partial Z^{[2]}}$$"]
+    gradZ2 --> gradW2["$$\frac{\partial L}{\partial W^{[2]}}$$"]
+    gradZ2 --> gradA1["$$\frac{\partial L}{\partial A^{[1]}}$$"]
+    gradA1 --> gradZ1["$$\frac{\partial L}{\partial Z^{[1]}}$$"]
+    gradZ1 --> gradW1["$$\frac{\partial L}{\partial W^{[1]}}$$"]
+
+    %% Parameter update
+    gradW1 --> update1["Update W¹"]
+    gradW2 --> update2["Update W²"]
+
+    %% Style
+    classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1,rx:5px,ry:5px
+    classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,rx:5px,ry:5px
+    classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c,rx:5px,ry:5px
+    classDef error fill:#ffebee,stroke:#c62828,color:#c62828,rx:5px,ry:5px
+    classDef grad fill:#fff3e0,stroke:#e65100,color:#e65100,rx:5px,ry:5px,padding:10px
+    classDef update fill:#e1f5fe,stroke:#01579b,color:#01579b,rx:5px,ry:5px
+
+    class x,y input
+    class z1,z2 forward
+    class a1,a2 hidden
+    class error error
+    class gradL,gradA1,gradW1,gradW2,gradZ1,gradZ2 grad
+    class update1,update2,yhat update
+```
+
+For each layer $l$:
+
+$$Z^{[l]} = W^{[l]} \cdot A^{[l-1]} + b^{[l]}$$
+$$A^{[l]} = g^{[l]}(Z^{[l]})$$
 
 Where:
-- $f(x)$ is the output
-- $\phi$ is the activation function
-- $w_i$ are weights
-- $x_i$ are inputs
-- $b$ is the bias
+- $W^{[l]}$ = weights matrix
+- $b^{[l]}$ = bias vector
 
 ---
 
-## Common Activation Functions (1/2)
+# Forward Propagation (cont.)
 
-### ReLU
-$$\phi(z) = \max(0, z)$$
-
-### Sigmoid
-$$\phi(z) = \frac{1}{1 + e^{-z}}$$
-
+<!-- Use the same forward propagation diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Activation Functions"
-        A["Input"] --> B["Activation Function"] --> C["Output"]
-    end
-    style B fill:#ff9f43
+    %% Set up the structure of forward propagation
+    Input["Input<br/>X"] --> WeightSum1["Weighted Sum<br/>$$Z^{[1]} = W^{[1]}X + b^{[1]}$$"]
+    WeightSum1 --> Activation1["Activation<br/>$$A^{[1]} = g(Z^{[1]})$$"]
+    Activation1 --> WeightSum2["Weighted Sum<br/>$$Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}$$"]
+    WeightSum2 --> Activation2["Activation<br/>$$A^{[2]} = g(Z^{[2]})$$"]
+    Activation2 --> Output["Output<br/>ŷ = A²"]
+
+    %% Add layer labels above
+    LayerInput["Input Layer"] -..- Input
+    LayerHidden["Hidden Layer"] -..- Activation1
+    LayerOutput["Output Layer"] -..- Output
+
+    %% Add detailed labels below for weights
+    Weights1["Weights W¹<br/>bias b¹"] -..- WeightSum1
+    Weights2["Weights W²<br/>bias b²"] -..- WeightSum2
+
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
+    classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,padding:10px
+    classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c,padding:10px
+    classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
+
+    class Input input
+    class WeightSum1,WeightSum2 forward
+    class Activation1,Activation2 hidden
+    class Output output
+    class LayerInput,LayerHidden,LayerOutput layer
+    class Weights1,Weights2 weights
 ```
-
----
-
-## Common Activation Functions (2/2)
-
-### Tanh
-$$\phi(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$$
-
-### Leaky ReLU
-$$\phi(z) = \max(\alpha z, z), \alpha = 0.01$$
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Activation Functions"
-        A["Input"] --> B["Activation Function"] --> C["Output"]
-    end
-    style B fill:#ff9f43
-```
-
----
-
-## Activation Function in Neural Processing
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Single Neuron"
-        A["Input"] --> B["Weighted Sum"]
-        B --> C["Activation Function"]
-        C --> D["Output"]
-    end
-    style C fill:#ff9f43
-```
-
----
-
-## Why MLP?
-
-- Advantages of MLPs:
-  1. Universal function approximators
-  2. Ability to learn nonlinear relationships
-  3. Scalability to high-dimensional data
-  4. Adaptability to various problem types
-
----
-
-## MLP Applications Overview
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "MLP Applications"
-        A["Input Data"] --> B["MLP"]
-        B --> C["Classification"]
-        B --> D["Regression"]
-        B --> E["Pattern Recognition"]
-    end
-    style B fill:#2ecc71
-```
-
----
-
-## Architecture of MLP
-
-- Layers:
-  1. Input Layer: Receives the raw data
-  2. Hidden Layer(s): Performs the complex data processing
-  3. Output Layer: Produces the final result
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Architecture" 
-        A["Input Layer"] --> B["Hidden Layers"]
-        B --> C["Output Layer"]
-    end
-    style A fill:#ff9f43
-    style B fill:#2ecc71
-    style C fill:#54a0ff
-```
-
----
-
-## MLP Architecture: Detailed View
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Architecture" 
-        subgraph "Input Layer"
-            I1((I1))
-            I2((I2))
-            I3((I3))
-        end
-        subgraph "Hidden Layer"
-            H1((H1))
-            H2((H2))
-            H3((H3))
-            H4((H4))
-        end
-        subgraph "Output Layer"
-            O1((O1))
-            O2((O2))
-        end
-        I1 & I2 & I3 --> H1 & H2 & H3 & H4 --> O1 & O2
-    end
-    style I1 fill:#ff9f43
-    style I2 fill:#ff9f43
-    style I3 fill:#ff9f43
-    style H1 fill:#2ecc71
-    style H2 fill:#2ecc71
-    style H3 fill:#2ecc71
-    style H4 fill:#2ecc71
-    style O1 fill:#54a0ff
-    style O2 fill:#54a0ff
-```
-
----
-
-## MLP Architecture Visualization
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Architecture" 
-        subgraph "Input Layer"
-            I1((I1))
-            I2((I2))
-            I3((I3))
-        end
-        subgraph "Hidden Layer"
-            H1((H1))
-            H2((H2))
-            H3((H3))
-            H4((H4))
-        end
-        subgraph "Output Layer"
-            O1((O1))
-            O2((O2))
-        end
-        I1 --> H1 & H2 & H3 & H4
-        I2 --> H1 & H2 & H3 & H4
-        I3 --> H1 & H2 & H3 & H4
-        H1 & H2 & H3 & H4 --> O1 & O2
-    end
-    style I1 fill:#ff9f43
-    style I2 fill:#ff9f43
-    style I3 fill:#ff9f43
-    style H1 fill:#2ecc71
-    style H2 fill:#2ecc71
-    style H3 fill:#2ecc71
-    style H4 fill:#2ecc71
-    style O1 fill:#54a0ff
-    style O2 fill:#54a0ff
-```
-
----
-
-## How MLPs Work
-
-1. Forward Propagation: Input data flows through the network
-2. Loss Calculation: Error between prediction and actual output is measured
-3. Backpropagation: Error is propagated backward through the network
-4. Weight Update: Parameters are updated to reduce error
-
----
-
-## MLP Training Process
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Training Cycle"
-        A["Input"] --> B["Forward Pass"]
-        B --> C["Calculate Loss"]
-        C --> D["Backward Pass"]
-        D --> E["Update Weights"]
-        E -.-> B
-    end
-    style B fill:#54a0ff
-    style D fill:#ff9f43
-```
-
----
-
-## Understanding Backpropagation
-
-**Mathematical representation:**
-$$\frac{\partial L}{\partial w_{ij}} = \frac{\partial L}{\partial a_j} \cdot \frac{\partial a_j}{\partial z_j} \cdot \frac{\partial z_j}{\partial w_{ij}}$$
 
 Where:
-- $L$ is the loss
-- $a_j$ is the activation of neuron j
-- $z_j$ is the weighted sum input to neuron j
-- $w_{ij}$ is the weight from neuron i to neuron j
+- $g^{[l]}$ = activation function
+- $A^{[l]}$ = activation output
 
 ---
 
-## Backpropagation Intuition
+# Backpropagation: Learning Process
 
-### Chain Rule Application
-Backpropagation applies the chain rule of calculus to compute gradients efficiently through the network.
-
-### Error Attribution
-It determines how much each weight contributed to the final error.
-
----
-
-## Backpropagation Flow
-
+<!-- Replace image with a backpropagation diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart RL
-    subgraph "Backpropagation"
-        A["Error"] --> B["Output Layer"]
-        B --> C["Hidden Layer"]
-        C --> D["Input Layer"]
-    end
-    style A fill:#ff6b6b
-    style B fill:#54a0ff
-    style C fill:#2ecc71
-    style D fill:#ff9f43
-```
-
----
-
-## Loss Functions in MLPs: Classification
-
-- Cross-Entropy Loss
-$$L = -\sum_{i=1}^{C} y_i \log(\hat{y}_i)$$
-
-- Binary Cross-Entropy
-$$L = -y\log(\hat{y}) - (1-y)\log(1-\hat{y})$$
-
-```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Loss Calculation"
-        A["Prediction"] --> B["Loss Function"]
-        C["Ground Truth"] --> B
-        B --> D["Loss Value"]
-    end
-    style B fill:#ff6b6b
+    FP[Forward Pass]
+    EC[Error Calculation]
+    BP[Backward Pass]
+    UP[Update Parameters]
+    FP --> EC
+    EC --> BP
+    BP --> UP
 ```
+
+1. **Forward pass**: Compute predictions
+   - Process inputs through the network
+2. **Error calculation**: Compare with ground truth
 
 ---
 
-## Loss Functions in MLPs: Regression
+# Backpropagation: Learning Process (cont.)
 
-- Mean Squared Error
-$$L = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$$
-
-- Mean Absolute Error
-$$L = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
-
+<!-- Use the same backpropagation diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Loss Calculation"
-        A["Prediction"] --> B["Loss Function"]
-        C["Ground Truth"] --> B
-        B --> D["Loss Value"]
-    end
-    style B fill:#ff6b6b
+    %% Forward pass nodes
+    x["Input<br/>X"] --> z1["Forward<br/>Propagation"]
+    z1 --> a1["Hidden<br/>Activation"]
+    a1 --> z2["Forward<br/>Propagation"]
+    z2 --> a2["Output<br/>Activation"]
+    a2 --> yhat["Prediction<br/>ŷ"]
+
+    %% Error calculation
+    yhat --> error["Loss<br/>L(ŷ,y)"]
+    y["Actual<br/>y"] --> error
+
+    %% Backward pass nodes with correct LaTeX notation
+    error --> gradL["$$\frac{\partial L}{\partial \hat{y}}$$"]
+    gradL --> gradZ2["$$\frac{\partial L}{\partial Z^{[2]}}$$"]
+    gradZ2 --> gradW2["$$\frac{\partial L}{\partial W^{[2]}}$$"]
+    gradZ2 --> gradA1["$$\frac{\partial L}{\partial A^{[1]}}$$"]
+    gradA1 --> gradZ1["$$\frac{\partial L}{\partial Z^{[1]}}$$"]
+    gradZ1 --> gradW1["$$\frac{\partial L}{\partial W^{[1]}}$$"]
+
+    %% Parameter update
+    gradW1 --> update1["Update W¹"]
+    gradW2 --> update2["Update W²"]
+
+    %% Style
+    classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1,rx:5px,ry:5px
+    classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,rx:5px,ry:5px
+    classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c,rx:5px,ry:5px
+    classDef error fill:#ffebee,stroke:#c62828,color:#c62828,rx:5px,ry:5px
+    classDef grad fill:#fff3e0,stroke:#e65100,color:#e65100,rx:5px,ry:5px,padding:10px
+    classDef update fill:#e1f5fe,stroke:#01579b,color:#01579b,rx:5px,ry:5px
+
+    class x,y input
+    class z1,z2 forward
+    class a1,a2 hidden
+    class error error
+    class gradL,gradA1,gradW1,gradW2,gradZ1,gradZ2 grad
+    class update1,update2,yhat update
 ```
+
+3. **Backward pass**: Compute gradients
+4. **Parameter update**: Adjust weights and biases
+
+$$W^{[l]} = W^{[l]} - \alpha \frac{\partial J}{\partial W^{[l]}}$$
+$$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 ---
 
-## Applications of MLP (1/2)
+# Loss Functions
 
-- Image and Speech Recognition
-- Natural Language Processing
-- Financial Forecasting
-- Medical Diagnosis
-- Robotics and Control Systems
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "MLP Applications"
-        A["Input Data"] --> B["MLP"]
-        B --> C["Various Tasks"]
-    end
-    style B fill:#2ecc71
-```
+| Task                     | Loss Function         | Formula |
+|--------------------------|-----------------------|---------|
+| Regression               | Mean Squared Error    | $\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$ |
+| Binary Classification    | Binary Cross-Entropy  | $-\frac{1}{n}\sum_{i=1}^{n}[y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)]$ |
 
 ---
 
-## Applications of MLP: Visual Examples
+# Loss Functions (cont.)
 
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "MLP Applications by Domain"
-        A["MLP"] --> B["Computer Vision"]
-        A --> C["Audio Processing"]
-        A --> D["Finance"]
-        A --> E["Healthcare"]
-    end
-    style A fill:#2ecc71
-```
+| Task                         | Loss Function             | Formula |
+|------------------------------|---------------------------|---------|
+| Multi-class Classification   | Categorical Cross-Entropy | $-\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{m}y_{ij}\log(\hat{y}_{ij})$ |
+
+- Loss guides the learning process
+- Different tasks use specialized error measurements
+- Optimization aims to minimize loss
 
 ---
 
-## Applications of MLP (2/2)
+# Universal Approximation Theorem
 
+<!-- Replace image with a UAT diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
-mindmap
-  root((MLP Applications))
-    Computer Vision
-      Image Classification
-      Object Detection
-    Natural Language Processing
-      Sentiment Analysis
-      Language Translation
-    Finance
-      Stock Prediction
-      Fraud Detection
-    Healthcare
-      Disease Diagnosis
-      Drug Discovery
-    Robotics
-      Motion Planning
-      Sensor Fusion
-```
-
----
-
-## From Theory to Practice: MLP Implementation Approaches
-
-Now that we understand the theory behind MLPs, let's explore how to implement them:
-
-1. **From Scratch** - Build every component manually
-   - Full control and understanding of each step
-   - Educational but labor-intensive
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "Implementation Approaches"
-        A["MLP Implementation"] --> B["From Scratch"]
-        A --> C["Using Frameworks"]
-    end
-    style B fill:#ff9f43
-    style C fill:#54a0ff
-```
-
----
-
-## Implementation Approaches (continued)
-
-2. **Using Frameworks** - Leverage high-level APIs
-   - Faster development and optimization
-   - Abstracts away implementation details
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "Implementation Approaches"
-        A["MLP Implementation"] --> B["From Scratch"]
-        A --> C["Using Frameworks"]
-    end
-    style B fill:#ff9f43
-    style C fill:#54a0ff
-```
-
----
-
-## Implementation Showdown: Raw Python vs TensorFlow
-
-- We'll implement the same MLP in two ways:
-  1. Pure Python to see the inner workings
-  2. TensorFlow to leverage abstraction
-- Key comparison points:
-  - Code complexity
-  - Performance
-  - Flexibility
-
-```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Implementation Methods"
-        A["Same MLP Model"] --> B["Python from Scratch"]
-        A --> C["TensorFlow"]
+    %% Input and output nodes
+    Input[("Input<br/>Features")] --> Hidden
+    Hidden --> Output[("Output<br/>Prediction")]
+
+    %% Hidden layer with multiple neurons
+    subgraph Hidden["Single Hidden Layer"]
+        N1[("Neuron 1")]
+        N2[("Neuron 2")]
+        N3[("...")]
+        N4[("Neuron n")]
     end
-    style B fill:#ff9f43
-    style C fill:#54a0ff
+
+    %% Annotation for the theorem
+    Hidden -.- Theorem["Can approximate<br/>any continuous function"]
+
+    %% Styling
+    classDef node fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#333,rx:5px,ry:5px
+    classDef hidden fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,rx:10px,ry:10px
+    classDef io fill:#e3f2fd,stroke:#1565c0,color:#0d47a1,rx:15px,ry:15px
+    classDef theorem fill:none,stroke:none,color:#d32f2f,font-style:italic,font-weight:bold
+
+    class Input,Output io
+    class Hidden hidden
+    class N1,N2,N3,N4 node
+    class Theorem theorem
 ```
+
+> "A feedforward network with a single hidden layer containing a finite number of neurons can approximate any continuous function, under mild assumptions on the activation function."
+
+- The theoretical foundation for MLP capabilities
 
 ---
 
-## Standard Approach: Building an MLP with TensorFlow
+# Universal Approximation Theorem (cont.)
 
-```python
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-model = Sequential([
-    Dense(64, activation='relu', input_shape=(784,)),
-    Dense(32, activation='relu'),
-    Dense(10, activation='softmax')
-])
-
-model.compile(optimizer='adam', 
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
-```
-
----
-
-## TensorFlow Implementation (continued)
-
-```python
-# Train the model (assuming x_train and y_train are defined)
-history = model.fit(x_train, y_train, epochs=10, validation_split=0.2)
-```
-
+<!-- Use the same UAT diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "TensorFlow Training"
-        A["Define Model"] --> B["Compile Model"]
-        B --> C["Fit Model"]
-        C --> D["Evaluate Results"]
-    end
-    style C fill:#54a0ff
-```
-
----
-
-## Visual Example: MNIST Classification with MLP
-
-### MNIST Dataset
-- 28×28 pixel grayscale images
-- 10 classes (digits 0-9)
-- 60,000 training, 10,000 test images
-
-```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "MNIST Classification with MLP"
-        A["Image Input"] --> B["MLP"]
-        B --> C["Digit Classification"]
+    %% Input and output nodes
+    Input[("Input<br/>Features")] --> Hidden
+    Hidden --> Output[("Output<br/>Prediction")]
+
+    %% Hidden layer with multiple neurons
+    subgraph Hidden["Single Hidden Layer"]
+        N1[("Neuron 1")]
+        N2[("Neuron 2")]
+        N3[("...")]
+        N4[("Neuron n")]
     end
-    style B fill:#2ecc71
+
+    %% Annotation for the theorem
+    Hidden -.- Theorem["Can approximate<br/>any continuous function"]
+
+    %% Styling
+    classDef node fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#333,rx:5px,ry:5px
+    classDef hidden fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,rx:10px,ry:10px
+    classDef io fill:#e3f2fd,stroke:#1565c0,color:#0d47a1,rx:15px,ry:15px
+    classDef theorem fill:none,stroke:none,color:#d32f2f,font-style:italic,font-weight:bold
+
+    class Input,Output io
+    class Hidden hidden
+    class N1,N2,N3,N4 node
+    class Theorem theorem
 ```
 
----
-
-## MNIST Classification: Code Example
-
-```python
-# Flatten 28x28 images to 784-feature vectors
-model = Sequential([
-    Dense(128, activation='relu', input_shape=(784,)),
-    Dense(64, activation='relu'),
-    Dense(10, activation='softmax')
-])
-# 97% accuracy in seconds!
-```
+- More complex functions may require more neurons
+- Practical implementations must balance capacity and training challenges
 
 ---
 
-## Under the Hood: Implementing an MLP from Scratch (1/3)
+# Visualizing Decision Boundaries
 
-```python
-import numpy as np
-
-class ScratchMLP:
-    def __init__(self, input_size, hidden_size, output_size):
-        # Initialize weights and biases
-        self.W1 = np.random.randn(input_size, hidden_size) * 0.01
-        self.b1 = np.zeros((1, hidden_size))
-        self.W2 = np.random.randn(hidden_size, output_size) * 0.01
-        self.b2 = np.zeros((1, output_size))
-    
-    def relu(self, Z):
-        return np.maximum(0, Z)
-```
-
----
-
-## Under the Hood: Implementing an MLP from Scratch (2/3)
-    
-```python
-    def forward(self, X):
-        # Forward propagation
-        self.Z1 = np.dot(X, self.W1) + self.b1
-        self.A1 = self.relu(self.Z1)
-        self.Z2 = np.dot(self.A1, self.W2) + self.b2
-        return self.Z2  # Linear output for regression
-    
-    def mse_loss(self, y_true, y_pred):
-        return np.mean((y_true - y_pred)**2)
-```
-
----
-
-## Under the Hood: Implementing an MLP from Scratch (3/3)
-    
-```python
-    def train(self, X, y, epochs=1000, lr=0.01):
-        for epoch in range(epochs):
-            # Forward pass
-            y_pred = self.forward(X)
-            
-            # Backward pass (simplified)
-            dL_dZ2 = 2*(y_pred - y)/len(y)
-            dZ2_dW2 = self.A1.T
-            dW2 = np.dot(dZ2_dW2, dL_dZ2)
-            db2 = np.sum(dL_dZ2, axis=0, keepdims=True)
-            
-            dA1_dZ1 = self.Z1 > 0
-            dZ1_dW1 = X.T
-            dW1 = np.dot(dZ1_dW1, np.dot(dL_dZ2, self.W2.T) * dA1_dZ1)
-            db1 = np.sum(np.dot(dL_dZ2, self.W2.T) * dA1_dZ1, axis=0)
-            
-            # Update parameters
-            self.W2 -= lr * dW2
-            self.b2 -= lr * db2
-            self.W1 -= lr * dW1
-            self.b1 -= lr * db1
-```
-
----
-
-## Scratch Implementation Key Points
-
-50 lines of pure Python! We initialize weights manually, implement ReLU and MSE from scratch, and hand-code backpropagation using chain rule.
-
----
-
-## Scratch Implementation Workflow
-
+<!-- Replace image with the same diagram used for forward propagation -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "Scratch Implementation"
-        A["Manual Weight Initialization"] --> B["Forward Propagation"]
-        B --> C["Loss Calculation"]
-        C --> D["Manual Backpropagation"]
-        D --> E["Weight Updates"]
-    end
-    style A fill:#ff9f43
-    style D fill:#54a0ff
-```
-
----
-
-## Demo: Testing Both Implementations (1/2)
-
-```python
-# Generate synthetic data for XOR problem
-X = np.array([[0,0], [0,1], [1,0], [1,1]])
-y = np.array([[0], [1], [1], [0]])  
-
-# Train our scratch model
-mlp = ScratchMLP(2, 4, 1)
-print("Initial loss:", mlp.mse_loss(y, mlp.forward(X)))
-mlp.train(X, y, epochs=1000)
-print("Final loss:", mlp.mse_loss(y, mlp.forward(X)))
-```
-
----
-
-## Demo: Testing Both Implementations (2/2)
-
-```python
-# Now with TensorFlow
-tf_mlp = Sequential([
-    Dense(4, activation='relu', input_shape=(2,)),
-    Dense(1)
-])
-tf_mlp.compile(optimizer='adam', loss='mse')
-history = tf_mlp.fit(X, y, epochs=1000, verbose=0)
-```
-
----
-
-## XOR Problem Visualization
-
-### XOR Logic
-- Input (0,0) → Output 0
-- Input (0,1) → Output 1
-- Input (1,0) → Output 1
-- Input (1,1) → Output 0
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "XOR Problem"
-        A["MLP Model"] --> B["XOR Classification"]
-    end
-    style A fill:#2ecc71
-```
-
----
-
-## Why XOR is Important for Neural Networks
-
-### Why XOR is important
-XOR is not linearly separable, requiring a hidden layer to solve.
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "XOR Problem"
-        A["(0,0) → 0"] 
-        B["(0,1) → 1"]
-        C["(1,0) → 1"]
-        D["(1,1) → 0"]
-    end
-    style A fill:#ff9f43
-    style B fill:#54a0ff
-    style C fill:#54a0ff
-    style D fill:#ff9f43
-```
-
----
-
-## Interactive Comparison Challenge
-
-| Metric | Scratch MLP | TensorFlow MLP |
-| :-- | :-- | :-- |
-| Lines of Code | 50 | 5 |
-| Training Time | ~2s | ~0.5s |
-| Final Loss | 0.12 | 0.08 |
-| Extensibility | Low | High |
-
----
-
-## Discussion Points for Comparison
-
-- **Team A**: Defend the scratch version!
-- **Team B**: Champion TensorFlow!
-- **Discussion point**: Why did TensorFlow achieve lower loss despite similar architecture? (Hint: Adam optimizer vs our basic SGD)
-
----
-
-## Behind the Scenes - What TensorFlow Adds
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "TensorFlow Advantages"
-        A["Input"] --> B["Autograd"]
-        B --> C["Optimizers"]
-        C --> D["GPU Acceleration"]
-        D --> E["Distributed Training"]
-    end
-    style B fill:#2ecc71
-    style D fill:#54a0ff
-```
-
----
-
-## TensorFlow's Advantages
-
-TensorFlow's advantages include automatic differentiation, advanced optimizers like Adam, GPU acceleration, and distributed training capabilities.
-
----
-
-## Optimizers in Modern Deep Learning (1/2)
-
-### Basic SGD (Our Scratch Version)
-$$\theta_{t+1} = \theta_t - \eta \nabla J(\theta_t)$$
-
-### Momentum
-$$v_{t+1} = \gamma v_t + \eta \nabla J(\theta_t)$$
-$$\theta_{t+1} = \theta_t - v_{t+1}$$
-
-```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Optimization Techniques"
-        A["Gradients"] --> B["Optimizer"]
-        B --> C["Parameter Updates"]
-    end
-    style B fill:#ff9f43
+    %% Set up the structure of forward propagation
+    Input["Input<br/>X"] --> WeightSum1["Weighted Sum<br/>$$Z^{[1]} = W^{[1]}X + b^{[1]}$$"]
+    WeightSum1 --> Activation1["Activation<br/>$$A^{[1]} = g(Z^{[1]})$$"]
+    Activation1 --> WeightSum2["Weighted Sum<br/>$$Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}$$"]
+    WeightSum2 --> Activation2["Activation<br/>$$A^{[2]} = g(Z^{[2]})$$"]
+    Activation2 --> Output["Output<br/>ŷ = A²"]
+
+    %% Add layer labels above
+    LayerInput["Input Layer"] -..- Input
+    LayerHidden["Hidden Layer"] -..- Activation1
+    LayerOutput["Output Layer"] -..- Output
+
+    %% Add detailed labels below for weights
+    Weights1["Weights W¹<br/>bias b¹"] -..- WeightSum1
+    Weights2["Weights W²<br/>bias b²"] -..- WeightSum2
+
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
+    classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,padding:10px
+    classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c,padding:10px
+    classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
+
+    class Input input
+    class WeightSum1,WeightSum2 forward
+    class Activation1,Activation2 hidden
+    class Output output
+    class LayerInput,LayerHidden,LayerOutput layer
+    class Weights1,Weights2 weights
 ```
+
+- **Linear boundaries**: Single-layer perceptrons
+  - Separate data with straight lines
+- **Non-linear boundaries**: MLPs with hidden layers
+  - Can form complex separation surfaces
 
 ---
 
-## Optimizers in Modern Deep Learning (2/2)
+# Visualizing Decision Boundaries (cont.)
 
-### RMSProp
-$$E[g^2]_t = 0.9 E[g^2]_{t-1} + 0.1 g_t^2$$
-$$\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{E[g^2]_t + \epsilon}} g_t$$
-
-### Adam (Used by TensorFlow)
-Combines momentum and RMSProp with bias correction
-
+<!-- Use the same forward propagation diagram -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Optimization Techniques"
-        A["Gradients"] --> B["Optimizer"]
-        B --> C["Parameter Updates"]
-    end
-    style B fill:#ff9f43
+    %% Set up the structure of forward propagation
+    Input["Input<br/>X"] --> WeightSum1["Weighted Sum<br/>$$Z^{[1]} = W^{[1]}X + b^{[1]}$$"]
+    WeightSum1 --> Activation1["Activation<br/>$$A^{[1]} = g(Z^{[1]})$$"]
+    Activation1 --> WeightSum2["Weighted Sum<br/>$$Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}$$"]
+    WeightSum2 --> Activation2["Activation<br/>$$A^{[2]} = g(Z^{[2]})$$"]
+    Activation2 --> Output["Output<br/>ŷ = A²"]
+
+    %% Add layer labels above
+    LayerInput["Input Layer"] -..- Input
+    LayerHidden["Hidden Layer"] -..- Activation1
+    LayerOutput["Output Layer"] -..- Output
+
+    %% Add detailed labels below for weights
+    Weights1["Weights W¹<br/>bias b¹"] -..- WeightSum1
+    Weights2["Weights W²<br/>bias b²"] -..- WeightSum2
+
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
+    classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,padding:10px
+    classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c,padding:10px
+    classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
+
+    class Input input
+    class WeightSum1,WeightSum2 forward
+    class Activation1,Activation2 hidden
+    class Output output
+    class LayerInput,LayerHidden,LayerOutput layer
+    class Weights1,Weights2 weights
 ```
 
+- **Complexity increases** with deeper architectures
+- Explore an interactive demo at [perceptron.marcr.xyz](https://perceptron.marcr.xyz)
+
 ---
 
-## Interactive Challenge - Optimize the MLP
+# Quick Quiz: Test Your Knowledge!
 
-- Challenge: Improve the model's accuracy
-- Options:
-  1. Add more layers
-  2. Increase neurons in hidden layers
-  3. Change activation functions
-  4. Adjust learning rate
+## Which of these problems can a single-layer perceptron solve?
+A) XOR problem
+B) Linear classification
+C) Image recognition
+D) All of the above
 
+*Use the poll feature to submit your answer!*
+
+---
+
+# Practical Implementation Challenges
+
+## Poll: What's your biggest challenge with neural networks?
+- [ ] Understanding the math
+- [ ] Choosing the right architecture
+- [ ] Overfitting/underfitting
+- [ ] Computational resources
+- [ ] Interpreting results
+
+*Share your thoughts in the chat!*
+
+---
+
+# Practical Implementation
+
+---
+
+# Thank You!
+
+<!-- Replace image with the same MLP diagram as before -->
 ```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "MLP Optimization"
-        A["Original MLP"] --> B["Modified Architecture"]
-        B --> C["Improved Performance"]
-    end
-    style B fill:#2ecc71
-```
-
----
-
-## Optimization Implementation
-
-- Let's implement these optimizations in both our scratch model and TensorFlow!
-
----
-
-## Interactive Activity - Gradient Calculation
-
-**Problem**:
-Given:
-
-$$\text{Loss} = (y - (W_2 \cdot \text{ReLU}(W_1 X + b_1) + b_2))^2$$
-
-Calculate 
-$$\frac{\partial \text{Loss}}{\partial W_1}$$ 
-
-for single sample X=[0.5, 0.3]
-
----
-
-## Gradient Calculation Hint
-
-**Hint**: Use chain rule through both layers! (ReLU derivative is 1 when input >0 else 0)
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart RL
-    subgraph "Backpropagation"
-        A["Error"] --> B["Output Layer"]
-        B --> C["Hidden Layer"]
-        C --> D["Input Layer"]
-    end
-    style A fill:#ff6b6b
-    style B fill:#54a0ff
-    style C fill:#2ecc71
-    style D fill:#ff9f43
-```
-
----
-
-## Gradient Calculation Solution
-
-$$\frac{\partial \text{Loss}}{\partial W_1} = -2(y - (W_2 \cdot \text{ReLU}(W_1 X + b_1) + b_2)) \cdot W_2 \cdot \frac{\partial \text{ReLU}(W_1 X + b_1)}{\partial (W_1 X + b_1)} \cdot X^T$$
-
-Where:
-- $$\frac{\partial \text{ReLU}(z)}{\partial z} = \begin{cases} 1 & \text{if } z > 0 \\ 0 & \text{if } z \leq 0 \end{cases}$$
-
----
-
-## The Verdict - When to Use Each Approach
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-pie
-    title "MLP Implementation Choices"
-    "Education/Learning" : 30
-    "Prototyping" : 60
-    "Production" : 10
-    "Research" : 20
-```
-
----
-
-## Practical Implementation Recommendations
-
-- **Scratch coding**: Best for education and understanding fundamentals
-- **TensorFlow**: Dominates real-world use cases
-- **Knowing both**: Makes you a better engineer!
-
-```mermaid
-%%{init: {"theme": "default"}}%%
 flowchart LR
-    subgraph "Implementation Choice"
-        A["Learning"] --> B["Scratch"]
-        C["Production"] --> D["Framework"]
+    %% Input layer with nodes
+    i1((x₁)) --> h1((h₁))
+    i2((x₂)) --> h1
+    i3((x₃)) --> h1
+    i1 --> h2((h₂))
+    i2 --> h2
+    i3 --> h2
+    i1 --> h3((h₃))
+    i2 --> h3
+    i3 --> h3
+
+    %% Hidden to output connections
+    h1 --> o1((ŷ₁))
+    h1 --> o2((ŷ₂))
+    h2 --> o1
+    h2 --> o2
+    h3 --> o1
+    h3 --> o2
+
+    %% Layer labels and grouping
+    subgraph Input["Input Layer"]
+        i1
+        i2
+        i3
     end
-    style B fill:#ff9f43
-    style D fill:#54a0ff
-```
 
----
-
-## Handling Overfitting in MLPs (1/2)
-
-### Common Techniques
-- Dropout: Randomly disable neurons
-- L1/L2 Regularization: Penalize large weights
-- Early Stopping: Stop when validation error increases
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Regularization"
-        A["MLP Model"] --> B["Regularization Techniques"]
-        B --> C["Reduced Overfitting"]
+    subgraph Hidden["Hidden Layer"]
+        h1
+        h2
+        h3
     end
-    style B fill:#ff9f43
-```
 
----
-
-## Handling Overfitting in MLPs (2/2)
-
-### Implementation Example
-```python
-# TensorFlow Dropout Example
-model = Sequential([
-    Dense(64, activation='relu'),
-    Dropout(0.5),  # 50% dropout
-    Dense(32, activation='relu'),
-    Dropout(0.3),  # 30% dropout
-    Dense(10, activation='softmax')
-])
-```
-
----
-
-## Future Directions in MLP Development
-
-- Emerging trends:
-  1. Transfer Learning
-  2. Attention Mechanisms
-  3. Neural Architecture Search
-  4. Automated hyperparameter optimization
-  5. Explainable AI techniques
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "Future Directions"
-        A["Current MLPs"] --> B["Advanced Techniques"]
-        B --> C["Next-Gen Models"]
+    subgraph Output["Output Layer"]
+        o1
+        o2
     end
-    style B fill:#2ecc71
+
+    %% Include annotations
+    Input -.-> |"Features"| Input
+    Hidden -.-> |"Feature Extraction"| Hidden
+    Output -.-> |"Predictions"| Output
+
+    %% Adding weight labels to some connections
+    i1 --> |w₁₁| h1
+    h2 --> |w₂₁| o1
+
+    %% Styling
+    classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
+    classDef node fill:white,stroke:#333,stroke-width:1px
+    classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+
+    class Input layer
+    class Hidden layer
+    class Output layer
+    class i1,i2,i3 input
+    class h1,h2,h3 hidden
+    class o1,o2 output
 ```
 
----
+## Contact Information
+- Email: [hi@marcr.xyz](mailto:hi@marcr.xyz)
+- Website: [marcr.xyz](https://marcr.xyz)
 
-## MLPs vs Other Neural Networks (1/2)
-
-### MLP
-- Fully connected layers
-- No inherent spatial awareness
-- Good for tabular data
-
-### CNN
-- Convolutional layers
-- Spatial awareness
-- Excellent for images
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Neural Network Types"
-        A["Input Data"] --> B["Different NN Architectures"]
-        B --> C["Task-Specific Outputs"]
-    end
-    style B fill:#2ecc71
-```
-
----
-
-## MLPs vs Other Neural Networks (2/2)
-
-### RNN
-- Recurrent connections
-- Temporal awareness
-- Good for sequences
-
-### Transformer
-- Attention mechanisms
-- Parallelizable
-- State-of-the-art for NLP
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Neural Network Types"
-        A["Input Data"] --> B["Different NN Architectures"]
-        B --> C["Task-Specific Outputs"]
-    end
-    style B fill:#2ecc71
-```
-
----
-
-## Final Challenge - Real-world MLP Design
-
-- Scenario: Design an MLP for a real-world problem
-- Teams brainstorm and present their designs:
-  - Define architecture
-  - Choose implementation approach
-  - Plan validation strategy
-  - Consider deployment challenges
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart TD
-    subgraph "MLP Design Challenge"
-        A["Problem Definition"] --> B["MLP Design"]
-        B --> C["Implementation & Validation"]
-    end
-    style B fill:#2ecc71
-```
-
----
-
-## Key Insights
-
-1. **Mathematical Foundation**: Both implementations rely on the same underlying principles
-2. **Optimization**: TensorFlow's advanced optimizers outperform basic implementations
-3. **Ecosystem**: Production needs demand framework tooling
-4. **Education**: Scratch code reveals hidden details
-
----
-
-## Implementation Challenge
-
-**Challenge**: Try modifying the scratch code to add Adam optimizer. Share your attempts with #MLPFromScratch!
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "Implementation Challenge"
-        A["Scratch MLP"] --> B["Add Adam Optimizer"]
-        B --> C["Improved Performance"]
-    end
-    style B fill:#ff9f43
-```
-
----
-
-## Summary and Conclusion
-
-### What We've Learned
-- MLP architecture and mathematics
-- Implementation approaches
-- Practical applications
-- Performance optimization
-- Industry best practices
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Knowledge Journey"
-        A["Theory"] --> B["Implementation"]
-        B --> C["Applications"]
-    end
-    style A fill:#ff9f43
-    style B fill:#2ecc71
-    style C fill:#54a0ff
-```
-
----
-
-## Next Steps
-
-### Moving Forward
-- Explore deeper architectures
-- Apply to your own projects
-- Investigate specialized networks
-- Join the neural network community
-- Contribute to open-source frameworks
-
----
-
-## References and Further Reading
-
-- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press.
-- Chollet, F. (2021). Deep Learning with Python. Manning Publications.
-- TensorFlow Documentation: [tensorflow.org](https://www.tensorflow.org)
-- Stanford CS231n: Convolutional Neural Networks for Visual Recognition
-- Kaggle Competitions: [kaggle.com](https://www.kaggle.com)
-
----
-
-## Thank You!
-
-Questions? Contact: your.email@example.com
-GitHub: [github.com/yourusername](https://github.com/yourusername)
-
-```mermaid
-%%{init: {"theme": "default"}}%%
-flowchart LR
-    subgraph "MLP Architecture" 
-        A["Input Layer"] --> B["Hidden Layers"]
-        B --> C["Output Layer"]
-    end
-    style A fill:#ff9f43
-    style B fill:#2ecc71
-    style C fill:#54a0ff
-```
-
+## Resources
+- Interactive Demo: [perceptron.marcr.xyz](https://perceptron.marcr.xyz)
+- Slides: [github.com/mabreyes/dlsu-lecture-slides](https://github.com/mabreyes/dlsu-lecture-slides)
