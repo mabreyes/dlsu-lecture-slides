@@ -214,8 +214,11 @@ class DataVisualizer {
         gridData[i].prediction = Array.isArray(predictions[i]) ? predictions[i] : [predictions[i]];
       }
 
-      // Create color scale
+      // Create color scale with more intense colors
       const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([1, 0]);
+      
+      // More vivid colors for multi-class predictions
+      const vividColors = ['#1a73e8', '#e53935', '#00c853', '#ff8f00', '#8e24aa'];
 
       // Draw boundary
       plot
@@ -235,15 +238,19 @@ class DataVisualizer {
           }
 
           if (d.prediction.length === 1) {
-            return colorScale(d.prediction[0]);
+            // Apply a more saturated color for binary classification
+            const value = d.prediction[0];
+            // Apply a gamma correction to increase contrast
+            const gamma = 0.7; // Values less than 1 increase contrast
+            const adjustedValue = Math.pow(value, gamma);
+            return colorScale(adjustedValue);
           } else {
-            // For multi-class, use index of max value for color
+            // For multi-class, use index of max value for color with more vivid colors
             const maxIndex = d.prediction.indexOf(Math.max(...d.prediction));
-            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
-            return colors[maxIndex % colors.length];
+            return vividColors[maxIndex % vividColors.length];
           }
         })
-        .style('opacity', 0.6);
+        .style('opacity', 0.8); // Increased from 0.6 for more visible predictions
     } catch (error) {
       console.error('Error rendering decision boundary:', error);
     }
@@ -360,10 +367,24 @@ class DataVisualizer {
         .datum(curvePoints)
         .attr('class', 'prediction-curve')
         .attr('fill', 'none')
-        .attr('stroke', '#e74c3c')
-        .attr('stroke-width', 4)
+        .attr('stroke', '#d32f2f') // More vivid red
+        .attr('stroke-width', 5)
         .attr('stroke-dasharray', '8,4')
-        .attr('d', lineGenerator);
+        .attr('d', lineGenerator)
+        .style('filter', 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.3))'); // Add shadow for better visibility
+        
+      // Add a subtle glow effect
+      plot
+        .append('path')
+        .datum(curvePoints)
+        .attr('class', 'prediction-curve-glow')
+        .attr('fill', 'none')
+        .attr('stroke', '#ff5252')
+        .attr('stroke-width', 9)
+        .attr('stroke-opacity', 0.3)
+        .attr('stroke-linecap', 'round')
+        .attr('d', lineGenerator)
+        .lower(); // Put it behind the main curve
     } catch (error) {
       console.error('Error rendering prediction curve:', error);
     }
