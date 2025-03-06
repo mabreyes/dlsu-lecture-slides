@@ -30,14 +30,14 @@
 }
 
 .neuron-label {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
   font-weight: 600;
   pointer-events: none;
   user-select: none;
 }
 
 .layer-label {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
   font-size: 12px;
   font-weight: 500;
   text-align: center;
@@ -50,8 +50,8 @@
 }
 
 .data-point:hover {
-  stroke-width: 2.5;
-  r: 6;
+  stroke-width: 3.5;
+  r: 12;
 }
 
 .grid-point {
@@ -62,14 +62,15 @@
   opacity: 0.4;
 }
 
-.axis line, .axis path {
+.axis line,
+.axis path {
   stroke: #e2e8f0;
-  stroke-width: 1px;
+  stroke-width: 1.5px;
 }
 
 .axis text {
-  font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
+  font-size: 14px;
   fill: #64748b;
 }
 
@@ -79,7 +80,8 @@
 }
 
 /* Visualization containers should have more space */
-#network-container, #data-container {
+#network-container,
+#data-container {
   padding-bottom: 30px;
   margin-bottom: 10px;
 }
@@ -97,17 +99,24 @@ svg {
 }
 
 /* Add tooltips for interactive elements */
-.neuron, .data-point {
+.neuron,
+.data-point {
   cursor: pointer;
 }
 
 /* Training progress animation */
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .training-in-progress {
   animation: pulse 1.5s infinite;
-} 
+}

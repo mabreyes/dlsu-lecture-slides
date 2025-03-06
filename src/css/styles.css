@@ -212,13 +212,67 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
 }
 
 .card-title svg {
   width: 20px;
   height: 20px;
   color: var(--primary-color);
+}
+
+/* Visualization descriptions and legends */
+.visualization-description,
+.control-description {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.control-description {
+  font-size: 0.825rem;
+  margin-bottom: 1.25rem;
+  color: var(--gray-500);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+
+.input-color {
+  background-color: #4361ee;
+}
+
+.hidden-color {
+  background-color: #3a0ca3;
+}
+
+.output-color {
+  background-color: #4ade80;
+}
+
+.positive-weight {
+  background-color: #4ade80;
+}
+
+.negative-weight {
+  background-color: #f43f5e;
 }
 
 /* Form Elements */

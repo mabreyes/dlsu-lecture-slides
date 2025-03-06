@@ -36,6 +36,9 @@
                         <span class="material-icons-round">settings</span>
                         Network Configuration
                     </h2>
+                    <p class="control-description">
+                        Configure the structure and behavior of your neural network. Adjust the number of layers, neurons, and activation functions to see how they affect learning.
+                    </p>
                     <div class="form-group">
                         <label for="hidden-layers">Hidden Layers:</label>
                         <input type="number" id="hidden-layers" min="1" max="5" value="1">
@@ -68,6 +71,9 @@
                         <span class="material-icons-round">model_training</span>
                         Training
                     </h2>
+                    <p class="control-description">
+                        Select a dataset and set training parameters. Higher epochs mean more training iterations, while batch size affects how many samples are processed at once.
+                    </p>
                     <div class="form-group">
                         <label for="dataset-type">Dataset:</label>
                         <select id="dataset-type">
@@ -103,6 +109,9 @@
                         <span class="material-icons-round">analytics</span>
                         Training Stats
                     </h2>
+                    <p class="control-description">
+                        Real-time metrics from the training process. Loss indicates error (lower is better), accuracy shows correct predictions percentage, and epoch shows current training progress.
+                    </p>
                     <div id="loss-display">Loss: 0</div>
                     <div id="accuracy-display">Accuracy: 0%</div>
                     <div id="epoch-display">Epoch: 0/0</div>
@@ -115,6 +124,15 @@
                         <span class="material-icons-round">bubble_chart</span>
                         Network Architecture
                     </h2>
+                    <p class="visualization-description">
+                        Visual representation of the neural network structure. Each node represents a neuron and lines represent connections between neurons. The thickness of each connection indicates the weight magnitude, while the color shows whether the weight is positive or negative. As training progresses, you'll see these weights adapt to minimize prediction error. Neurons activate based on weighted inputs and the selected activation function.
+                        <br><br>
+                        <span class="legend-item"><span class="legend-color input-color"></span>Input</span>
+                        <span class="legend-item"><span class="legend-color hidden-color"></span>Hidden</span>
+                        <span class="legend-item"><span class="legend-color output-color"></span>Output</span>
+                        <span class="legend-item"><span class="legend-color positive-weight"></span>Positive weight</span>
+                        <span class="legend-item"><span class="legend-color negative-weight"></span>Negative weight</span>
+                    </p>
                     <div id="network-container"></div>
                 </div>
 
@@ -123,6 +141,11 @@
                         <span class="material-icons-round">scatter_plot</span>
                         Data & Predictions
                     </h2>
+                    <p class="visualization-description">
+                        Shows training data points and how the model learns to classify them over time. The background colors represent the model's predictions across the entire feature space, with color intensity showing confidence. Watch how the decision boundaries (dashed lines) evolve as training progresses, adapting to separate different classes. For regression tasks, the curve shows the model's approximation of the underlying function.
+                        <br><br>
+                        Different datasets demonstrate various learning challenges for neural networks - from simple XOR problems to complex spiral patterns. Try various network architectures and training parameters to see how they affect learning performance.
+                    </p>
                     <div id="data-container"></div>
                 </div>
             </div>
