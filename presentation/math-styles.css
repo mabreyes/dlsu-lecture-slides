@@ -12,8 +12,8 @@
 }
 
 /* Handle dark themes */
-[data-theme-color="dark"] .katex,
-[data-theme-color="black"] .katex {
+[data-theme-color='dark'] .katex,
+[data-theme-color='black'] .katex {
   color: #ffffff;
 }
 
@@ -26,4 +26,4 @@ marp-auto-scaling {
 img {
   max-width: 90%;
   height: auto;
-} 
+}

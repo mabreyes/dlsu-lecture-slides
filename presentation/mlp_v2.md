@@ -12,8 +12,8 @@ math: true
 ## Neural Network Fundamentals
 ### A Comprehensive Introduction
 
-**Marc Reyes**  
-*Lecturer*  
+**Marc Reyes**
+*Lecturer*
 *March 7, 2025*
 
 ---
@@ -34,7 +34,7 @@ flowchart LR
     i1 --> h3((h₃))
     i2 --> h3
     i3 --> h3
-    
+
     %% Hidden to output connections
     h1 --> o1((ŷ₁))
     h1 --> o2((ŷ₂))
@@ -42,41 +42,41 @@ flowchart LR
     h2 --> o2
     h3 --> o1
     h3 --> o2
-    
+
     %% Layer labels and grouping
     subgraph Input["Input Layer"]
         i1
         i2
         i3
     end
-    
+
     subgraph Hidden["Hidden Layer"]
         h1
         h2
         h3
     end
-    
+
     subgraph Output["Output Layer"]
         o1
         o2
     end
-    
+
     %% Include annotations
     Input -.-> |"Features"| Input
     Hidden -.-> |"Feature Extraction"| Hidden
     Output -.-> |"Predictions"| Output
-    
+
     %% Adding weight labels to some connections
     i1 --> |w₁₁| h1
     h2 --> |w₂₁| o1
-    
+
     %% Styling
     classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
     classDef node fill:white,stroke:#333,stroke-width:1px
     classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
     classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    
+
     class Input layer
     class Hidden layer
     class Output layer
@@ -85,8 +85,8 @@ flowchart LR
     class o1,o2 output
 ```
 
-- Foundation of modern neural networks  
-- Versatile architecture for diverse problems  
+- Foundation of modern neural networks
+- Versatile architecture for diverse problems
 - Combines simplicity with powerful learning capabilities
 
 ---
@@ -101,21 +101,21 @@ flowchart LR
     x2[x₂] -- w₂ --> sum
     x3[x₃] -- w₃ --> sum
     b[bias] -.-> sum
-    
+
     %% Processing steps
     sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
-    
+
     %% Annotations
     x1 -.-> |"Inputs"| x2
     w1 -.-> |"Weights"| w2
     af -.-> |"f(z)=σ(z)"| af
-    
+
     %% Styling
     classDef node fill:#f9f9f9,stroke:#999,color:#333
     classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
     class x1,x2,x3,output io
     class sum,af node
-    
+
     %% Label
     subgraph "Artificial Neuron"
         x1
@@ -126,12 +126,12 @@ flowchart LR
         output
         b
     end
-    classDef subgraph fill:none,stroke:#666
+    classDef neurongroup fill:none,stroke:#666
 ```
 
-- **Biological inspiration**: Mimics brain's neural structure  
-  - Neurons receive, process, and transmit information  
-- **Artificial neuron**: Weighted sum + activation function  
+- **Biological inspiration**: Mimics brain's neural structure
+  - Neurons receive, process, and transmit information
+- **Artificial neuron**: Weighted sum + activation function
   - Processes inputs through mathematical operations
 
 ---
@@ -146,21 +146,21 @@ flowchart LR
     x2[x₂] -- w₂ --> sum
     x3[x₃] -- w₃ --> sum
     b[bias] -.-> sum
-    
+
     %% Processing steps
     sum -- z --> af["Activation\nFunction"] -- a --> output[Output]
-    
+
     %% Annotations
     x1 -.-> |"Inputs"| x2
     w1 -.-> |"Weights"| w2
     af -.-> |"f(z)=σ(z)"| af
-    
+
     %% Styling
     classDef node fill:#f9f9f9,stroke:#999,color:#333
     classDef io fill:#e1f5fe,stroke:#01579b,color:#01579b
     class x1,x2,x3,output io
     class sum,af node
-    
+
     %% Label
     subgraph "Artificial Neuron"
         x1
@@ -171,12 +171,12 @@ flowchart LR
         output
         b
     end
-    classDef subgraph fill:none,stroke:#666
+    classDef neurongroup fill:none,stroke:#666
 ```
 
-- **Network topology**: Input layer → Hidden layers → Output layer  
-  - Organized structure for information processing  
-- **Information flow**: Forward propagation for predictions  
+- **Network topology**: Input layer → Hidden layers → Output layer
+  - Organized structure for information processing
+- **Information flow**: Forward propagation for predictions
   - Data travels from input to output through the network
 
 ---
@@ -206,9 +206,9 @@ timeline
         2025: Modern advancements continue
 ```
 
-- **1958**: Rosenblatt's single-layer perceptron  
-  - First implementation of a neural learning algorithm  
-- **1969**: Minsky & Papert expose limitations (XOR problem)  
+- **1958**: Rosenblatt's single-layer perceptron
+  - First implementation of a neural learning algorithm
+- **1969**: Minsky & Papert expose limitations (XOR problem)
   - Demonstrated that single-layer networks couldn't solve nonlinear problems
 
 ---
@@ -238,9 +238,9 @@ timeline
         2025: Modern advancements continue
 ```
 
-- **1986**: Rumelhart, Hinton & Williams introduce backpropagation  
-  - Breakthrough algorithm enabling training of multi-layer networks  
-- **Today**: Foundation for advanced architectures (CNNs, RNNs, Transformers)  
+- **1986**: Rumelhart, Hinton & Williams introduce backpropagation
+  - Breakthrough algorithm enabling training of multi-layer networks
+- **Today**: Foundation for advanced architectures (CNNs, RNNs, Transformers)
   - Core concepts extended to specialized network designs
 
 ---
@@ -260,7 +260,7 @@ flowchart LR
     i1 --> h3((h₃))
     i2 --> h3
     i3 --> h3
-    
+
     %% Hidden to output connections
     h1 --> o1((ŷ₁))
     h1 --> o2((ŷ₂))
@@ -268,41 +268,41 @@ flowchart LR
     h2 --> o2
     h3 --> o1
     h3 --> o2
-    
+
     %% Layer labels and grouping
     subgraph Input["Input Layer"]
         i1
         i2
         i3
     end
-    
+
     subgraph Hidden["Hidden Layer"]
         h1
         h2
         h3
     end
-    
+
     subgraph Output["Output Layer"]
         o1
         o2
     end
-    
+
     %% Include annotations
     Input -.-> |"Features"| Input
     Hidden -.-> |"Feature Extraction"| Hidden
     Output -.-> |"Predictions"| Output
-    
+
     %% Adding weight labels to some connections
     i1 --> |w₁₁| h1
     h2 --> |w₂₁| o1
-    
+
     %% Styling
     classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
     classDef node fill:white,stroke:#333,stroke-width:1px
     classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
     classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    
+
     class Input layer
     class Hidden layer
     class Output layer
@@ -312,11 +312,11 @@ flowchart LR
 ```
 
 ## Key Components:
-- **Input layer**: Raw data reception  
-  - Receives and standardizes input features  
-- **Hidden layers**: Feature extraction and transformation  
-  - Learns hierarchical representations of data  
-- **Output layer**: Final prediction/classification  
+- **Input layer**: Raw data reception
+  - Receives and standardizes input features
+- **Hidden layers**: Feature extraction and transformation
+  - Learns hierarchical representations of data
+- **Output layer**: Final prediction/classification
   - Produces the network's answer to the given problem
 
 ---
@@ -336,7 +336,7 @@ flowchart LR
     i1 --> h3((h₃))
     i2 --> h3
     i3 --> h3
-    
+
     %% Hidden to output connections
     h1 --> o1((ŷ₁))
     h1 --> o2((ŷ₂))
@@ -344,41 +344,41 @@ flowchart LR
     h2 --> o2
     h3 --> o1
     h3 --> o2
-    
+
     %% Layer labels and grouping
     subgraph Input["Input Layer"]
         i1
         i2
         i3
     end
-    
+
     subgraph Hidden["Hidden Layer"]
         h1
         h2
         h3
     end
-    
+
     subgraph Output["Output Layer"]
         o1
         o2
     end
-    
+
     %% Include annotations
     Input -.-> |"Features"| Input
     Hidden -.-> |"Feature Extraction"| Hidden
     Output -.-> |"Predictions"| Output
-    
+
     %% Adding weight labels to some connections
     i1 --> |w₁₁| h1
     h2 --> |w₂₁| o1
-    
+
     %% Styling
     classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
     classDef node fill:white,stroke:#333,stroke-width:1px
     classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
     classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    
+
     class Input layer
     class Hidden layer
     class Output layer
@@ -388,9 +388,9 @@ flowchart LR
 ```
 
 ## Key Components (continued):
-- **Weights & biases**: Learnable parameters  
-  - Adjusted during training to minimize error  
-- **Activation functions**: Introduce non-linearity  
+- **Weights & biases**: Learnable parameters
+  - Adjusted during training to minimize error
+- **Activation functions**: Introduce non-linearity
   - Enable the network to learn complex patterns
 
 ---
@@ -401,28 +401,28 @@ flowchart LR
 ```mermaid
 flowchart TD
     %% Main activation function node with branches
-    Root["Activation Functions"] --- SigClass["Sigmoid Class"] 
+    Root["Activation Functions"] --- SigClass["Sigmoid Class"]
     Root --- ReLUClass["ReLU Class"]
     Root --- OtherClass["Other Functions"]
-    
+
     %% Sigmoid class activations
     SigClass --- Sigmoid["Sigmoid\nσ(x) = 1/(1+e^-x)"]
     SigClass --- Tanh["Tanh\ntanh(x) = (e^x-e^-x)/(e^x+e^-x)"]
-    
+
     %% ReLU class activations
     ReLUClass --- ReLU["ReLU\nf(x) = max(0,x)"]
     ReLUClass --- LeakyReLU["Leaky ReLU\nf(x) = max(0.01x, x)"]
     ReLUClass --- PReLU["Parametric ReLU\nf(x) = max(αx, x)"]
-    
+
     %% Other activation functions
     OtherClass --- Softmax["Softmax\nσ(x_i) = e^x_i/Σe^x_j"]
     OtherClass --- GELU["GELU\nf(x) = x⋅Φ(x)"]
-    
+
     %% Styling
     classDef root fill:#f5f5f5,stroke:#666,stroke-width:2px,color:#333,rx:5px,ry:5px
     classDef category fill:#e1f5fe,stroke:#0277bd,color:#0277bd,rx:5px,ry:5px
     classDef function fill:#fff,stroke:#999,color:#333,rx:5px,ry:5px
-    
+
     class Root root
     class SigClass,ReLUClass,OtherClass category
     class Sigmoid,Tanh,ReLU,LeakyReLU,PReLU,Softmax,GELU function
@@ -441,28 +441,28 @@ flowchart TD
 ```mermaid
 flowchart TD
     %% Main activation function node with branches
-    Root["Activation Functions"] --- SigClass["Sigmoid Class"] 
+    Root["Activation Functions"] --- SigClass["Sigmoid Class"]
     Root --- ReLUClass["ReLU Class"]
     Root --- OtherClass["Other Functions"]
-    
+
     %% Sigmoid class activations
     SigClass --- Sigmoid["Sigmoid\nσ(x) = 1/(1+e^-x)"]
     SigClass --- Tanh["Tanh\ntanh(x) = (e^x-e^-x)/(e^x+e^-x)"]
-    
+
     %% ReLU class activations
     ReLUClass --- ReLU["ReLU\nf(x) = max(0,x)"]
     ReLUClass --- LeakyReLU["Leaky ReLU\nf(x) = max(0.01x, x)"]
     ReLUClass --- PReLU["Parametric ReLU\nf(x) = max(αx, x)"]
-    
+
     %% Other activation functions
     OtherClass --- Softmax["Softmax\nσ(x_i) = e^x_i/Σe^x_j"]
     OtherClass --- GELU["GELU\nf(x) = x⋅Φ(x)"]
-    
+
     %% Styling
     classDef root fill:#f5f5f5,stroke:#666,stroke-width:2px,color:#333,rx:5px,ry:5px
     classDef category fill:#e1f5fe,stroke:#0277bd,color:#0277bd,rx:5px,ry:5px
     classDef function fill:#fff,stroke:#999,color:#333,rx:5px,ry:5px
-    
+
     class Root root
     class SigClass,ReLUClass,OtherClass category
     class Sigmoid,Tanh,ReLU,LeakyReLU,PReLU,Softmax,GELU function
@@ -486,23 +486,23 @@ flowchart LR
     a1 --> z2["Forward\nPropagation"]
     z2 --> a2["Output\nActivation"]
     a2 --> yhat["Prediction\nŷ"]
-    
+
     %% Error calculation
     yhat --> error["Loss\nL(ŷ,y)"]
     y["Actual\ny"] --> error
-    
+
     %% Backward pass nodes
-    error --> gradL["∂L/∂ŷ"] 
-    gradL --> gradZ2["∂L/∂Z²"] 
-    gradZ2 --> gradW2["∂L/∂W²"] 
+    error --> gradL["∂L/∂ŷ"]
+    gradL --> gradZ2["∂L/∂Z²"]
+    gradZ2 --> gradW2["∂L/∂W²"]
     gradZ2 --> gradA1["∂L/∂A¹"]
     gradA1 --> gradZ1["∂L/∂Z¹"]
     gradZ1 --> gradW1["∂L/∂W¹"]
-    
+
     %% Parameter update
     gradW1 --> update1["Update W¹"]
     gradW2 --> update2["Update W²"]
-    
+
     %% Style
     classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1,rx:5px,ry:5px
     classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,rx:5px,ry:5px
@@ -510,7 +510,7 @@ flowchart LR
     classDef error fill:#ffebee,stroke:#c62828,color:#c62828,rx:5px,ry:5px
     classDef grad fill:#fff3e0,stroke:#e65100,color:#e65100,rx:5px,ry:5px
     classDef update fill:#e1f5fe,stroke:#01579b,color:#01579b,rx:5px,ry:5px
-    
+
     class x,y input
     class z1,z2 forward
     class a1,a2 hidden
@@ -519,14 +519,14 @@ flowchart LR
     class update1,update2,yhat update
 ```
 
-For each layer \( l \):
+For each layer $l$:
 
-$$Z^{[l]} = W^{[l]} \cdot A^{[l-1]} + b^{[l]}$$  
+$$Z^{[l]} = W^{[l]} \cdot A^{[l-1]} + b^{[l]}$$
 $$A^{[l]} = g^{[l]}(Z^{[l]})$$
 
 Where:
-- \(W^{[l]}\) = weights matrix  
-- \(b^{[l]}\) = bias vector
+- $W^{[l]}$ = weights matrix  
+- $b^{[l]}$ = bias vector
 
 ---
 
@@ -541,22 +541,22 @@ flowchart LR
     Activation1 --> WeightSum2["Weighted Sum\nZ² = W²A¹ + b²"]
     WeightSum2 --> Activation2["Activation\nA² = g(Z²)"]
     Activation2 --> Output["Output\nŷ = A²"]
-    
+
     %% Add layer labels above
     LayerInput["Input Layer"] -..- Input
     LayerHidden["Hidden Layer"] -..- Activation1
     LayerOutput["Output Layer"] -..- Output
-    
+
     %% Add detailed labels below for weights
     Weights1["Weights W¹\nbias b¹"] -..- WeightSum1
     Weights2["Weights W²\nbias b²"] -..- WeightSum2
-    
+
     %% Styling
     classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
     classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20
     classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c
     classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
-    
+
     class Input input
     class WeightSum1,WeightSum2 forward
     class Activation1,Activation2 hidden
@@ -566,8 +566,8 @@ flowchart LR
 ```
 
 Where:
-- \(g^{[l]}\) = activation function  
-- \(A^{[l]}\) = activation output
+- $g^{[l]}$ = activation function  
+- $A^{[l]}$ = activation output
 
 ---
 
@@ -585,8 +585,8 @@ flowchart LR
     BP --> UP
 ```
 
-1. **Forward pass**: Compute predictions  
-   - Process inputs through the network  
+1. **Forward pass**: Compute predictions
+   - Process inputs through the network
 2. **Error calculation**: Compare with ground truth
 
 ---
@@ -602,23 +602,23 @@ flowchart LR
     a1 --> z2["Forward\nPropagation"]
     z2 --> a2["Output\nActivation"]
     a2 --> yhat["Prediction\nŷ"]
-    
+
     %% Error calculation
     yhat --> error["Loss\nL(ŷ,y)"]
     y["Actual\ny"] --> error
-    
+
     %% Backward pass nodes
-    error --> gradL["∂L/∂ŷ"] 
-    gradL --> gradZ2["∂L/∂Z²"] 
-    gradZ2 --> gradW2["∂L/∂W²"] 
+    error --> gradL["∂L/∂ŷ"]
+    gradL --> gradZ2["∂L/∂Z²"]
+    gradZ2 --> gradW2["∂L/∂W²"]
     gradZ2 --> gradA1["∂L/∂A¹"]
     gradA1 --> gradZ1["∂L/∂Z¹"]
     gradZ1 --> gradW1["∂L/∂W¹"]
-    
+
     %% Parameter update
     gradW1 --> update1["Update W¹"]
     gradW2 --> update2["Update W²"]
-    
+
     %% Style
     classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1,rx:5px,ry:5px
     classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20,rx:5px,ry:5px
@@ -626,7 +626,7 @@ flowchart LR
     classDef error fill:#ffebee,stroke:#c62828,color:#c62828,rx:5px,ry:5px
     classDef grad fill:#fff3e0,stroke:#e65100,color:#e65100,rx:5px,ry:5px
     classDef update fill:#e1f5fe,stroke:#01579b,color:#01579b,rx:5px,ry:5px
-    
+
     class x,y input
     class z1,z2 forward
     class a1,a2 hidden
@@ -638,7 +638,7 @@ flowchart LR
 3. **Backward pass**: Compute gradients  
 4. **Parameter update**: Adjust weights and biases
 
-$$W^{[l]} = W^{[l]} - \alpha \frac{\partial J}{\partial W^{[l]}}$$  
+$$W^{[l]} = W^{[l]} - \alpha \frac{\partial J}{\partial W^{[l]}}$$
 $$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 ---
@@ -647,8 +647,8 @@ $$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 | Task                     | Loss Function         | Formula |
 |--------------------------|-----------------------|---------|
-| Regression               | Mean Squared Error    | \(\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2\) |
-| Binary Classification    | Binary Cross-Entropy  | \(-\frac{1}{n}\sum_{i=1}^{n}[y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)]\) |
+| Regression               | Mean Squared Error    | $\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$ |
+| Binary Classification    | Binary Cross-Entropy  | $-\frac{1}{n}\sum_{i=1}^{n}[y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)]$ |
 
 ---
 
@@ -656,10 +656,10 @@ $$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 | Task                         | Loss Function             | Formula |
 |------------------------------|---------------------------|---------|
-| Multi-class Classification   | Categorical Cross-Entropy | \(-\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{m}y_{ij}\log(\hat{y}_{ij})\) |
+| Multi-class Classification   | Categorical Cross-Entropy | $-\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{m}y_{ij}\log(\hat{y}_{ij})$ |
 
-- Loss guides the learning process  
-- Different tasks use specialized error measurements  
+- Loss guides the learning process
+- Different tasks use specialized error measurements
 - Optimization aims to minimize loss
 
 ---
@@ -672,7 +672,7 @@ flowchart LR
     %% Input and output nodes
     Input[("Input\nFeatures")] --> Hidden
     Hidden --> Output[("Output\nPrediction")]
-    
+
     %% Hidden layer with multiple neurons
     subgraph Hidden["Single Hidden Layer"]
         N1[("Neuron 1")]
@@ -680,16 +680,16 @@ flowchart LR
         N3[("...")]
         N4[("Neuron n")]
     end
-    
+
     %% Annotation for the theorem
     Hidden -.- Theorem["Can approximate\nany continuous function"]
-    
+
     %% Styling
     classDef node fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#333,rx:5px,ry:5px
     classDef hidden fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,rx:10px,ry:10px
     classDef io fill:#e3f2fd,stroke:#1565c0,color:#0d47a1,rx:15px,ry:15px
     classDef theorem fill:none,stroke:none,color:#d32f2f,font-style:italic,font-weight:bold
-    
+
     class Input,Output io
     class Hidden hidden
     class N1,N2,N3,N4 node
@@ -710,7 +710,7 @@ flowchart LR
     %% Input and output nodes
     Input[("Input\nFeatures")] --> Hidden
     Hidden --> Output[("Output\nPrediction")]
-    
+
     %% Hidden layer with multiple neurons
     subgraph Hidden["Single Hidden Layer"]
         N1[("Neuron 1")]
@@ -718,23 +718,23 @@ flowchart LR
         N3[("...")]
         N4[("Neuron n")]
     end
-    
+
     %% Annotation for the theorem
     Hidden -.- Theorem["Can approximate\nany continuous function"]
-    
+
     %% Styling
     classDef node fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#333,rx:5px,ry:5px
     classDef hidden fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,rx:10px,ry:10px
     classDef io fill:#e3f2fd,stroke:#1565c0,color:#0d47a1,rx:15px,ry:15px
     classDef theorem fill:none,stroke:none,color:#d32f2f,font-style:italic,font-weight:bold
-    
+
     class Input,Output io
     class Hidden hidden
     class N1,N2,N3,N4 node
     class Theorem theorem
 ```
 
-- More complex functions may require more neurons  
+- More complex functions may require more neurons
 - Practical implementations must balance capacity and training challenges
 
 ---
@@ -750,22 +750,22 @@ flowchart LR
     Activation1 --> WeightSum2["Weighted Sum\nZ² = W²A¹ + b²"]
     WeightSum2 --> Activation2["Activation\nA² = g(Z²)"]
     Activation2 --> Output["Output\nŷ = A²"]
-    
+
     %% Add layer labels above
     LayerInput["Input Layer"] -..- Input
     LayerHidden["Hidden Layer"] -..- Activation1
     LayerOutput["Output Layer"] -..- Output
-    
+
     %% Add detailed labels below for weights
     Weights1["Weights W¹\nbias b¹"] -..- WeightSum1
     Weights2["Weights W²\nbias b²"] -..- WeightSum2
-    
+
     %% Styling
     classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
     classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20
     classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c
     classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
-    
+
     class Input input
     class WeightSum1,WeightSum2 forward
     class Activation1,Activation2 hidden
@@ -774,9 +774,9 @@ flowchart LR
     class Weights1,Weights2 weights
 ```
 
-- **Linear boundaries**: Single-layer perceptrons  
-  - Separate data with straight lines  
-- **Non-linear boundaries**: MLPs with hidden layers  
+- **Linear boundaries**: Single-layer perceptrons
+  - Separate data with straight lines
+- **Non-linear boundaries**: MLPs with hidden layers
   - Can form complex separation surfaces
 
 ---
@@ -792,22 +792,22 @@ flowchart LR
     Activation1 --> WeightSum2["Weighted Sum\nZ² = W²A¹ + b²"]
     WeightSum2 --> Activation2["Activation\nA² = g(Z²)"]
     Activation2 --> Output["Output\nŷ = A²"]
-    
+
     %% Add layer labels above
     LayerInput["Input Layer"] -..- Input
     LayerHidden["Hidden Layer"] -..- Activation1
     LayerOutput["Output Layer"] -..- Output
-    
+
     %% Add detailed labels below for weights
     Weights1["Weights W¹\nbias b¹"] -..- WeightSum1
     Weights2["Weights W²\nbias b²"] -..- WeightSum2
-    
+
     %% Styling
     classDef input fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1
     classDef forward fill:#e8f5e9,stroke:#1b5e20,color:#1b5e20
     classDef hidden fill:#f3e5f5,stroke:#4a148c,color:#4a148c
     classDef output fill:#fff3e0,stroke:#e65100,color:#e65100
-    
+
     class Input input
     class WeightSum1,WeightSum2 forward
     class Activation1,Activation2 hidden
@@ -816,7 +816,7 @@ flowchart LR
     class Weights1,Weights2 weights
 ```
 
-- **Complexity increases** with deeper architectures  
+- **Complexity increases** with deeper architectures
 - Explore an interactive demo at [perceptron.marcr.xyz](https://perceptron.marcr.xyz)
 
 ---
@@ -824,9 +824,9 @@ flowchart LR
 # Quick Quiz: Test Your Knowledge!
 
 ## Which of these problems can a single-layer perceptron solve?
-A) XOR problem  
-B) Linear classification  
-C) Image recognition  
+A) XOR problem
+B) Linear classification
+C) Image recognition
 D) All of the above
 
 *Use the poll feature to submit your answer!*
@@ -836,10 +836,10 @@ D) All of the above
 # Practical Implementation Challenges
 
 ## Poll: What's your biggest challenge with neural networks?
-- [ ] Understanding the math  
-- [ ] Choosing the right architecture  
-- [ ] Overfitting/underfitting  
-- [ ] Computational resources  
+- [ ] Understanding the math
+- [ ] Choosing the right architecture
+- [ ] Overfitting/underfitting
+- [ ] Computational resources
 - [ ] Interpreting results
 
 *Share your thoughts in the chat!*
@@ -865,7 +865,7 @@ flowchart LR
     i1 --> h3((h₃))
     i2 --> h3
     i3 --> h3
-    
+
     %% Hidden to output connections
     h1 --> o1((ŷ₁))
     h1 --> o2((ŷ₂))
@@ -873,41 +873,41 @@ flowchart LR
     h2 --> o2
     h3 --> o1
     h3 --> o2
-    
+
     %% Layer labels and grouping
     subgraph Input["Input Layer"]
         i1
         i2
         i3
     end
-    
+
     subgraph Hidden["Hidden Layer"]
         h1
         h2
         h3
     end
-    
+
     subgraph Output["Output Layer"]
         o1
         o2
     end
-    
+
     %% Include annotations
     Input -.-> |"Features"| Input
     Hidden -.-> |"Feature Extraction"| Hidden
     Output -.-> |"Predictions"| Output
-    
+
     %% Adding weight labels to some connections
     i1 --> |w₁₁| h1
     h2 --> |w₂₁| o1
-    
+
     %% Styling
     classDef layer fill:#f5f5f5,stroke:#999,stroke-width:1px,rx:5px,ry:5px
     classDef node fill:white,stroke:#333,stroke-width:1px
     classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     classDef hidden fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
     classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    
+
     class Input layer
     class Hidden layer
     class Output layer

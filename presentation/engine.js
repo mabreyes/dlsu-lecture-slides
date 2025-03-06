@@ -11,7 +11,7 @@ const marpConfig = {
     strict: false,
     macros: {
       // Add any macro definitions here if needed
-      '\\R': '\\mathbb{R}'
+      '\\R': '\\mathbb{R}',
     },
     // Ensure formulas are properly displayed
     output: 'html',
@@ -20,15 +20,15 @@ const marpConfig = {
     // Allow display mode
     displayMode: true,
     // Improved alignment
-    fleqn: false
+    fleqn: false,
   },
   // Other Marp configuration options
   markdown: {
     breaks: true,
-    html: true
+    html: true,
   },
   // Enable HTML directly
-  html: true
+  html: true,
 };
 
 // Create and export Marp instance with custom config
@@ -36,7 +36,7 @@ module.exports = opts => {
   // Create Marp instance with our config
   const marp = new Marp({
     ...opts,
-    ...marpConfig
+    ...marpConfig,
   });
 
   // Use our custom mermaid plugin

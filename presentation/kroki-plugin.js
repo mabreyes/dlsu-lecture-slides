@@ -1,4 +1,4 @@
-const zlib = require('zlib')
+const zlib = require('zlib');
 
 const krokiLangs = [
   'actdiag',
@@ -24,29 +24,29 @@ const krokiLangs = [
   'vega',
   'vegalite',
   'wavedrom',
-]
+];
 
-const entrypoint = 'https://kroki.io/'
+const entrypoint = 'https://kroki.io/';
 
-const marpKrokiPlugin = (md) => {
-  const { fence } = md.renderer.rules
+const marpKrokiPlugin = md => {
+  const { fence } = md.renderer.rules;
 
   md.renderer.rules.fence = (tokens, idx, options, env, self) => {
-    const info = md.utils.unescapeAll(tokens[idx].info).trim()
+    const info = md.utils.unescapeAll(tokens[idx].info).trim();
 
     if (info) {
-      const [lang] = info.split(/(\s+)/g)
+      const [lang] = info.split(/(\s+)/g);
 
       if (krokiLangs.includes(lang)) {
-        const data = zlib.deflateSync(tokens[idx].content).toString('base64url')
+        const data = zlib.deflateSync(tokens[idx].content).toString('base64url');
 
         // <marp-auto-scaling> is working only with Marp Core v3
-        return `<p><marp-auto-scaling data-downscale-only><img src="${entrypoint}${lang}/svg/${data}"/></marp-auto-scaling></p>`
+        return `<p><marp-auto-scaling data-downscale-only><img src="${entrypoint}${lang}/svg/${data}"/></marp-auto-scaling></p>`;
       }
     }
 
-    return fence.call(self, tokens, idx, options, env, self)
-  }
-}
+    return fence.call(self, tokens, idx, options, env, self);
+  };
+};
 
-module.exports = marpKrokiPlugin 
+module.exports = marpKrokiPlugin;

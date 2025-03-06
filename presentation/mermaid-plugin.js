@@ -4,7 +4,7 @@ module.exports = function mermaidPlugin(md) {
 
   // Add mermaid script and debugging to head
   const originalRender = md.renderer.render;
-  md.renderer.render = function(tokens, options, env) {
+  md.renderer.render = function (tokens, options, env) {
     const result = originalRender.call(this, tokens, options, env);
     return result.replace(
       '</head>',
@@ -24,7 +24,7 @@ module.exports = function mermaidPlugin(md) {
           text-align: center;
           max-width: 100%;
         }
-        
+
         /* Math formula styling */
         .katex-display {
           margin: 1em 0 !important;
@@ -32,16 +32,16 @@ module.exports = function mermaidPlugin(md) {
           overflow-y: hidden;
           padding: 0.5em 0;
         }
-        .katex { 
-          font-size: 1.1em !important; 
+        .katex {
+          font-size: 1.1em !important;
         }
-        
+
         /* Fix math colors on dark backgrounds */
         [data-theme-color="dark"] .katex,
         [data-theme-color="black"] .katex {
           color: #f8f8f2;
         }
-        
+
         /* Debug info */
         .debug-info {
           background: #f8f9fa;
@@ -61,16 +61,16 @@ module.exports = function mermaidPlugin(md) {
           color: #cc0000;
         }
       </style>
-      
+
       <!-- Load necessary libraries -->
       <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.0/dist/mermaid.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"></script>
-      
+
       <script>
         // Detailed debugging for better troubleshooting
         console.log('Document loaded, initializing plugins...');
-        
+
         function debugInPage(message, isError = false) {
           const debugDiv = document.createElement('div');
           debugDiv.className = isError ? 'debug-info error' : 'debug-info';
@@ -78,10 +78,10 @@ module.exports = function mermaidPlugin(md) {
           document.body.appendChild(debugDiv);
           console.log(message);
         }
-        
+
         document.addEventListener('DOMContentLoaded', () => {
           console.log('DOM fully loaded');
-          
+
           // 1. Initialize KaTeX for math rendering
           try {
             console.log('Initializing KaTeX...');
@@ -102,17 +102,17 @@ module.exports = function mermaidPlugin(md) {
               strict: false,
               trust: true
             });
-            
+
             // Check if KaTeX rendered anything
             const mathElements = document.querySelectorAll('.katex');
             console.log(\`KaTeX rendered \${mathElements.length} elements\`);
-            
+
             // Look for potential math elements that weren't rendered
             document.querySelectorAll('p, li, td').forEach(el => {
               const text = el.textContent;
               if (
-                (text.includes('$') && (text.match(/\\$/g) || []).length >= 2) || 
-                text.includes('\\\\(') || 
+                (text.includes('$') && (text.match(/\\$/g) || []).length >= 2) ||
+                text.includes('\\\\(') ||
                 text.includes('\\\\[')
               ) {
                 if (!el.querySelector('.katex')) {
@@ -124,49 +124,49 @@ module.exports = function mermaidPlugin(md) {
             console.error('KaTeX initialization error:', error);
             debugInPage('KaTeX Error: ' + error.message, true);
           }
-          
+
           // 2. Initialize Mermaid for diagrams
           try {
             console.log('Initializing Mermaid...');
-            
+
             // Configure Mermaid
             mermaid.initialize({
               startOnLoad: false,
               theme: 'default',
               securityLevel: 'loose',
-              flowchart: { 
-                useMaxWidth: false, 
+              flowchart: {
+                useMaxWidth: false,
                 htmlLabels: true,
                 curve: 'basis'
               },
-              sequence: { 
+              sequence: {
                 useMaxWidth: false,
                 wrap: true,
                 width: 150
               },
-              gantt: { 
+              gantt: {
                 useMaxWidth: false,
-                fontSize: 14 
+                fontSize: 14
               },
               pie: {
                 useWidth: 500
               }
             });
-            
+
             // Find all mermaid diagram containers
             const mermaidElements = document.querySelectorAll('pre.mermaid, div.mermaid, pre.language-mermaid');
             console.log(\`Found \${mermaidElements.length} mermaid elements\`);
-            
+
             // Process each mermaid diagram
             if (mermaidElements.length > 0) {
               mermaidElements.forEach((el, index) => {
                 try {
                   const id = \`mermaid-diagram-\${index}\`;
                   el.id = id;
-                  
+
                   const content = el.textContent.trim();
                   console.log(\`Processing diagram #\${index}:\`, content.substring(0, 50) + '...');
-                  
+
                   // Only render if we have content
                   if (content.length > 0) {
                     mermaid.render(id, content, (svgCode) => {
@@ -183,15 +183,15 @@ module.exports = function mermaidPlugin(md) {
               });
             } else {
               console.warn('No mermaid diagrams found with the expected selectors');
-              
+
               // Try to find potential mermaid blocks that might be mis-tagged
               const codeBlocks = document.querySelectorAll('pre code');
               codeBlocks.forEach((block, i) => {
                 const content = block.textContent;
                 if (
-                  content.includes('graph ') || 
-                  content.includes('sequenceDiagram') || 
-                  content.includes('gantt') || 
+                  content.includes('graph ') ||
+                  content.includes('sequenceDiagram') ||
+                  content.includes('gantt') ||
                   content.includes('classDiagram')
                 ) {
                   console.warn('Potential mermaid diagram found in non-mermaid code block:', content.substring(0, 50) + '...');
@@ -209,15 +209,15 @@ module.exports = function mermaidPlugin(md) {
   };
 
   // Enhanced handling of mermaid code blocks
-  md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+  md.renderer.rules.fence = function (tokens, idx, options, env, self) {
     const token = tokens[idx];
     const code = token.content.trim();
     const info = token.info ? token.info.trim().toLowerCase() : '';
-    
+
     if (info === 'mermaid') {
       // Ensure valid unique ID
       const id = `mermaid-diagram-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-      
+
       // Create a structured mermaid container with failsafe rendering
       return `
         <div class="mermaid-wrapper">
@@ -225,10 +225,10 @@ module.exports = function mermaidPlugin(md) {
         </div>
       `;
     }
-    
+
     // Use original renderer for other languages
     return originalFence(tokens, idx, options, env, self);
   };
-  
+
   return md;
-}; 
+};
