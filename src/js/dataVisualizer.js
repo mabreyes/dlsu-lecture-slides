@@ -216,7 +216,7 @@ class DataVisualizer {
 
       // Create color scale with more intense colors
       const colorScale = d3.scaleSequential(d3.interpolateRdBu).domain([1, 0]);
-      
+
       // More vivid colors for multi-class predictions
       const vividColors = ['#1a73e8', '#e53935', '#00c853', '#ff8f00', '#8e24aa'];
 
@@ -372,7 +372,7 @@ class DataVisualizer {
         .attr('stroke-dasharray', '8,4')
         .attr('d', lineGenerator)
         .style('filter', 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.3))'); // Add shadow for better visibility
-        
+
       // Add a subtle glow effect
       plot
         .append('path')

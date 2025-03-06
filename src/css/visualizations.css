@@ -137,7 +137,9 @@ svg {
   font-size: 11px;
   max-width: 250px;
   min-width: 150px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.1),
+    0 1px 4px rgba(0, 0, 0, 0.08);
   z-index: 1000;
   line-height: 1.4;
   transform-origin: bottom center;
@@ -177,7 +179,7 @@ svg {
   padding-top: 4px;
 }
 
-.neuron-tooltip span.positive, 
+.neuron-tooltip span.positive,
 .neuron-tooltip span.negative {
   display: inline-block;
   padding: 0 3px;
@@ -193,12 +195,12 @@ svg {
 }
 
 .neuron-tooltip .positive {
-  color: #228B22;
+  color: #228b22;
   font-weight: 600;
 }
 
 .neuron-tooltip .negative {
-  color: #D32F2F;
+  color: #d32f2f;
   font-weight: 600;
 }
 
