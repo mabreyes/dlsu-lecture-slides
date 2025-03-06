@@ -159,7 +159,9 @@ math: true
 </script>
 
 # Multilayer Perceptron (MLP)
+
 ## Neural Network Fundamentals
+
 ### A Comprehensive Introduction
 
 **Marc Reyes**
@@ -169,6 +171,7 @@ math: true
 ---
 
 # Multilayer Perceptron (MLP)
+
 ### The Building Blocks of Deep Learning
 
 <!-- Replace background image with a consistent MLP diagram -->
@@ -286,7 +289,7 @@ flowchart LR
 
 ---
 
-# From Neurons to Networks (cont.)
+# From Neurons to Networks 
 
 <!-- Use the same neuron diagram for consistency -->
 ```mermaid
@@ -363,7 +366,7 @@ timeline
 
 ---
 
-# The Perceptron Journey (cont.)
+# The Perceptron Journey 
 
 <!-- Use the same perceptron journey diagram -->
 ```mermaid
@@ -461,7 +464,8 @@ flowchart LR
     class o1,o2 output
 ```
 
-## Key Components:
+## Key Components
+
 - **Input layer**: Raw data reception
   - Receives and standardizes input features
 - **Hidden layers**: Feature extraction and transformation
@@ -471,7 +475,7 @@ flowchart LR
 
 ---
 
-# MLP Architecture (cont.)
+# MLP Architecture 
 
 <!-- Use the same MLP architecture diagram to remain consistent -->
 ```mermaid
@@ -537,7 +541,8 @@ flowchart LR
     class o1,o2 output
 ```
 
-## Key Components (continued):
+## Key Components (continued)
+
 - **Weights & biases**: Learnable parameters
   - Adjusted during training to minimize error
 - **Activation functions**: Introduce non-linearity
@@ -585,7 +590,7 @@ flowchart TD
 
 ---
 
-# Activation Functions (cont.)
+# Activation Functions 
 
 <!-- Use the same activation functions diagram -->
 ```mermaid
@@ -675,12 +680,13 @@ $$Z^{[l]} = W^{[l]} \cdot A^{[l-1]} + b^{[l]}$$
 $$A^{[l]} = g^{[l]}(Z^{[l]})$$
 
 Where:
+
 - $W^{[l]}$ = weights matrix
 - $b^{[l]}$ = bias vector
 
 ---
 
-# Forward Propagation (cont.)
+# Forward Propagation 
 
 <!-- Use the same forward propagation diagram -->
 ```mermaid
@@ -716,6 +722,7 @@ flowchart LR
 ```
 
 Where:
+
 - $g^{[l]}$ = activation function
 - $A^{[l]}$ = activation output
 
@@ -741,7 +748,7 @@ flowchart LR
 
 ---
 
-# Backpropagation: Learning Process (cont.)
+# Backpropagation: Learning Process 
 
 <!-- Use the same backpropagation diagram -->
 ```mermaid
@@ -802,7 +809,7 @@ $$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 ---
 
-# Loss Functions (cont.)
+# Loss Functions 
 
 | Task                         | Loss Function             | Formula |
 |------------------------------|---------------------------|---------|
@@ -852,7 +859,7 @@ flowchart LR
 
 ---
 
-# Universal Approximation Theorem (cont.)
+# Universal Approximation Theorem 
 
 <!-- Use the same UAT diagram -->
 ```mermaid
@@ -931,7 +938,7 @@ flowchart LR
 
 ---
 
-# Visualizing Decision Boundaries (cont.)
+# Visualizing Decision Boundaries 
 
 <!-- Use the same forward propagation diagram -->
 ```mermaid
@@ -971,9 +978,10 @@ flowchart LR
 
 ---
 
-# Quick Quiz: Test Your Knowledge!
+# Quick Quiz: Test Your Knowledge
 
 ## Which of these problems can a single-layer perceptron solve?
+
 A) XOR problem
 B) Linear classification
 C) Image recognition
@@ -986,11 +994,12 @@ D) All of the above
 # Practical Implementation Challenges
 
 ## Poll: What's your biggest challenge with neural networks?
-- [ ] Understanding the math
-- [ ] Choosing the right architecture
-- [ ] Overfitting/underfitting
-- [ ] Computational resources
-- [ ] Interpreting results
+
+- Understanding the math
+- Choosing the right architecture
+- Overfitting/underfitting
+- Computational resources
+- Interpreting results
 
 *Share your thoughts in the chat!*
 
@@ -1000,7 +1009,7 @@ D) All of the above
 
 ---
 
-# Thank You!
+# Thank You
 
 <!-- Replace image with the same MLP diagram as before -->
 ```mermaid
@@ -1067,9 +1076,11 @@ flowchart LR
 ```
 
 ## Contact Information
+
 - Email: [hi@marcr.xyz](mailto:hi@marcr.xyz)
 - Website: [marcr.xyz](https://marcr.xyz)
 
 ## Resources
+
 - Interactive Demo: [perceptron.marcr.xyz](https://perceptron.marcr.xyz)
 - Slides: [github.com/mabreyes/dlsu-lecture-slides](https://github.com/mabreyes/dlsu-lecture-slides)
