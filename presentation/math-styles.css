@@ -1,0 +1,29 @@
+/* Math formula styling for Marp presentations */
+
+/* Adjust the display math size */
+.katex-display {
+  margin: 1em 0 !important;
+  font-size: 1.2em;
+}
+
+/* Ensure inline math is clear */
+.katex {
+  font-size: 1.1em;
+}
+
+/* Handle dark themes */
+[data-theme-color="dark"] .katex,
+[data-theme-color="black"] .katex {
+  color: #ffffff;
+}
+
+/* Add a bit of margin to diagrams */
+marp-auto-scaling {
+  margin: 1em 0;
+}
+
+/* Keep images contained */
+img {
+  max-width: 90%;
+  height: auto;
+} 
