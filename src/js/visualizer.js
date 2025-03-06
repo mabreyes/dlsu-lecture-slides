@@ -26,8 +26,14 @@ class MLPVisualizer {
     // Network data
     this.networkData = null;
 
+    // Tooltip element
+    this.tooltip = null;
+
     // Initialize SVG
     this.initSVG();
+
+    // Create tooltip
+    this.initTooltip();
   }
 
   /**
@@ -42,6 +48,27 @@ class MLPVisualizer {
       .attr('height', this.height)
       .attr('viewBox', [0, 0, this.width, this.height])
       .style('font', "10px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif");
+  }
+
+  /**
+   * Initialize tooltip div
+   */
+  initTooltip() {
+    // Remove any existing tooltip
+    d3.select(`#${this.containerId}-tooltip`).remove();
+    
+    // Create tooltip element with white background and proper styling
+    this.tooltip = d3.select("body").append("div")
+      .attr("id", `${this.containerId}-tooltip`)
+      .attr("class", "neuron-tooltip")
+      .style("position", "absolute")
+      .style("pointer-events", "none")
+      .style("background-color", "#ffffff")
+      .style("padding", "14px 16px")
+      .style("border-radius", "8px")
+      .style("box-shadow", "0 3px 12px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.08)")
+      .style("font-size", "10px") // Smaller text size
+      .style("opacity", 0);
   }
 
   /**
@@ -122,40 +149,50 @@ class MLPVisualizer {
    * Draw neurons for each layer
    */
   drawNeurons(layerPositions) {
-    // For each layer
+    const layerClasses = ["input-neuron", "hidden-neuron", "output-neuron"];
+    
+    // Flatten all neurons for easier selection
+    let allNeurons = [];
+    
+    // Process each layer
     layerPositions.forEach((positions, layerIndex) => {
-      // Draw neurons
-      const neurons = this.svg
-        .selectAll(`.layer-${layerIndex}`)
-        .data(positions)
-        .enter()
-        .append('circle')
-        .attr('class', d => {
-          if (layerIndex === 0) return 'neuron input-neuron';
-          if (layerIndex === layerPositions.length - 1) return 'neuron output-neuron';
-          return 'neuron hidden-neuron';
-        })
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', this.neuronRadius)
-        .attr('data-layer', layerIndex)
-        .attr('data-neuron', d => d.neuronIndex);
-
-      // Add neuron labels
-      this.svg
-        .selectAll(`.neuron-label-${layerIndex}`)
-        .data(positions)
-        .enter()
-        .append('text')
-        .attr('class', `neuron-label-${layerIndex}`)
-        .attr('x', d => d.x)
-        .attr('y', d => d.y + 4)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'middle')
-        .style('font-size', '12px')
-        .style('font-weight', 'bold')
-        .style('font-family', "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif")
-        .text(d => d.neuronIndex);
+      // Determine neuron class based on layer index
+      const neuronClass = layerIndex === 0 
+        ? layerClasses[0] 
+        : (layerIndex === layerPositions.length - 1 
+          ? layerClasses[2] 
+          : layerClasses[1]);
+      
+      // Add neurons to the flattened array
+      positions.forEach(neuron => {
+        neuron.layerIndex = layerIndex;
+        neuron.class = neuronClass;
+        allNeurons.push(neuron);
+      });
+    });
+    
+    // Create neurons
+    allNeurons.forEach(neuron => {
+      // Create neuron circle
+      this.svg.append("circle")
+        .attr("class", `neuron ${neuron.class}`)
+        .attr("cx", neuron.x)
+        .attr("cy", neuron.y)
+        .attr("r", this.neuronRadius)
+        .on("mouseover", (event) => this.showNeuronTooltip(event, neuron))
+        .on("mouseout", () => this.hideTooltip());
+      
+      // Add label inside neuron
+      this.svg.append("text")
+        .attr("class", "neuron-label")
+        .attr("x", neuron.x)
+        .attr("y", neuron.y + 4)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .style("font-family", "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif")
+        .text(neuron.neuronIndex);
     });
   }
 
@@ -255,6 +292,167 @@ class MLPVisualizer {
     if (this.networkData) {
       this.render();
     }
+  }
+
+  /**
+   * Show tooltip with neuron information
+   */
+  showNeuronTooltip(event, neuron) {
+    if (!this.tooltip) return;
+    
+    // Basic neuron information
+    let content = `<strong>Layer ${neuron.layerIndex + 1}, Neuron ${neuron.neuronIndex + 1}</strong><br>`;
+    
+    // Determine neuron type and background color
+    let bgColor = "#ffffff";
+    let textColor = "#333333";
+    let neuronType = "";
+    
+    if (neuron.layerIndex === 0) {
+      neuronType = "Input neuron";
+      bgColor = "#EEF1FF"; // Light blue for input neurons
+    } else if (neuron.layerIndex === this.networkData.layers.length - 1) {
+      neuronType = "Output neuron";
+      bgColor = "#EEFFF5"; // Light green for output neurons
+    } else {
+      neuronType = "Hidden neuron";
+      bgColor = "#F0EAFF"; // Light purple for hidden neurons
+    }
+    
+    content += `<span>${neuronType}</span>`;
+    
+    // Add weights information in a concise format
+    if (this.networkData && this.networkData.weights) {
+      // Input neurons - show outgoing weights
+      if (neuron.layerIndex === 0 && this.networkData.weights[0]) {
+        content += `<br><br><strong>Weights:</strong><br>`;
+        
+        // Count positive and negative outgoing weights
+        let positiveCount = 0;
+        let negativeCount = 0;
+        let maxWeight = 0;
+        let minWeight = 0;
+        
+        for (let i = 0; i < this.networkData.weights[0].length; i++) {
+          const weight = this.networkData.weights[0][i][neuron.neuronIndex];
+          if (weight > 0) {
+            positiveCount++;
+            maxWeight = Math.max(maxWeight, weight);
+          } else if (weight < 0) {
+            negativeCount++;
+            minWeight = Math.min(minWeight, weight);
+          }
+        }
+        
+        // Show summary
+        content += `<span class="positive">${positiveCount} positive</span> / <span class="negative">${negativeCount} negative</span><br>`;
+        if (positiveCount > 0) {
+          content += `Strongest positive: <span class="positive">${maxWeight.toFixed(3)}</span><br>`;
+        }
+        if (negativeCount > 0) {
+          content += `Strongest negative: <span class="negative">${minWeight.toFixed(3)}</span>`;
+        }
+      }
+      // Hidden neurons - show incoming weights
+      else if (neuron.layerIndex > 0 && this.networkData.weights[neuron.layerIndex - 1]) {
+        content += `<br><br><strong>Weights:</strong><br>`;
+        
+        // Count positive and negative incoming weights
+        let positiveCount = 0;
+        let negativeCount = 0;
+        let maxWeight = 0;
+        let minWeight = 0;
+        
+        const incomingWeights = this.networkData.weights[neuron.layerIndex - 1][neuron.neuronIndex];
+        for (let i = 0; i < incomingWeights.length; i++) {
+          const weight = incomingWeights[i];
+          if (weight > 0) {
+            positiveCount++;
+            maxWeight = Math.max(maxWeight, weight);
+          } else if (weight < 0) {
+            negativeCount++;
+            minWeight = Math.min(minWeight, weight);
+          }
+        }
+        
+        // Show summary
+        content += `<span class="positive">${positiveCount} positive</span> / <span class="negative">${negativeCount} negative</span><br>`;
+        if (positiveCount > 0) {
+          content += `Strongest positive: <span class="positive">${maxWeight.toFixed(3)}</span><br>`;
+        }
+        if (negativeCount > 0) {
+          content += `Strongest negative: <span class="negative">${minWeight.toFixed(3)}</span>`;
+        }
+      }
+    }
+    
+    // Update tooltip content first
+    this.tooltip.html(content);
+    
+    // Add an arrow to the tooltip that matches the background color
+    const arrowStyle = `
+      <style>
+        #${this.containerId}-tooltip:after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          margin-left: -8px;
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 8px solid ${bgColor};
+          filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.06));
+        }
+      </style>
+    `;
+    this.tooltip.node().insertAdjacentHTML('beforeend', arrowStyle);
+    
+    // Get the SVG container's position relative to the viewport
+    const svgRect = this.svg.node().getBoundingClientRect();
+    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Calculate absolute position of the neuron in the document
+    const neuronAbsX = svgRect.left + neuron.x + scrollX;
+    const neuronAbsY = svgRect.top + neuron.y + scrollY;
+    
+    // Get the tooltip dimensions
+    const tooltipRect = this.tooltip.node().getBoundingClientRect();
+    
+    // Position tooltip above the neuron with proper styling
+    this.tooltip
+      .style("position", "absolute")
+      .style("background-color", bgColor)
+      .style("color", textColor)
+      .style("padding", "14px 16px")
+      .style("border-radius", "8px")
+      .style("box-shadow", "0 3px 12px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.08)")
+      .style("font-size", "10px") // Smaller text size
+      .style("left", (neuronAbsX - tooltipRect.width / 2) + "px")
+      .style("top", (neuronAbsY - this.neuronRadius - tooltipRect.height - 10) + "px")
+      .transition()
+      .duration(200)
+      .style("opacity", 1);
+  }
+  
+  /**
+   * Hide the tooltip
+   */
+  hideTooltip() {
+    if (!this.tooltip) return;
+    
+    this.tooltip
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+      .on("end", () => {
+        // Reset to default styles when hidden
+        this.tooltip
+          .style("left", "-9999px")
+          .style("background-color", "#ffffff");
+      });
   }
 }
 

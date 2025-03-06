@@ -243,7 +243,7 @@ class DataVisualizer {
             return colors[maxIndex % colors.length];
           }
         })
-        .style('opacity', 0.4);
+        .style('opacity', 0.6);
     } catch (error) {
       console.error('Error rendering decision boundary:', error);
     }
