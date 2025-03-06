@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^6.9.0",
     "html-webpack-plugin": "^5.5.4",
     "style-loader": "^3.3.4",

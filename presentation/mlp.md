@@ -289,7 +289,7 @@ flowchart LR
 
 ---
 
-# From Neurons to Networks 
+# From Neurons to Networks
 
 <!-- Use the same neuron diagram for consistency -->
 ```mermaid
@@ -366,7 +366,7 @@ timeline
 
 ---
 
-# The Perceptron Journey 
+# The Perceptron Journey
 
 <!-- Use the same perceptron journey diagram -->
 ```mermaid
@@ -475,7 +475,7 @@ flowchart LR
 
 ---
 
-# MLP Architecture 
+# MLP Architecture
 
 <!-- Use the same MLP architecture diagram to remain consistent -->
 ```mermaid
@@ -590,7 +590,7 @@ flowchart TD
 
 ---
 
-# Activation Functions 
+# Activation Functions
 
 <!-- Use the same activation functions diagram -->
 ```mermaid
@@ -686,7 +686,7 @@ Where:
 
 ---
 
-# Forward Propagation 
+# Forward Propagation
 
 <!-- Use the same forward propagation diagram -->
 ```mermaid
@@ -748,7 +748,7 @@ flowchart LR
 
 ---
 
-# Backpropagation: Learning Process 
+# Backpropagation: Learning Process
 
 <!-- Use the same backpropagation diagram -->
 ```mermaid
@@ -809,7 +809,7 @@ $$b^{[l]} = b^{[l]} - \alpha \frac{\partial J}{\partial b^{[l]}}$$
 
 ---
 
-# Loss Functions 
+# Loss Functions
 
 | Task                         | Loss Function             | Formula |
 |------------------------------|---------------------------|---------|
@@ -859,7 +859,7 @@ flowchart LR
 
 ---
 
-# Universal Approximation Theorem 
+# Universal Approximation Theorem
 
 <!-- Use the same UAT diagram -->
 ```mermaid
@@ -938,7 +938,7 @@ flowchart LR
 
 ---
 
-# Visualizing Decision Boundaries 
+# Visualizing Decision Boundaries
 
 <!-- Use the same forward propagation diagram -->
 ```mermaid

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -11,7 +12,10 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
-    static: './dist',
+    static: [
+      './dist',
+      { directory: path.resolve(__dirname, 'presentation'), publicPath: '/presentation' }
+    ],
     hot: true,
   },
   module: {
@@ -26,6 +30,22 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'MLP Visualizer',
       template: './src/index.html',
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'presentation/mlp.html',
+          to: 'mlp.html',
+        },
+        {
+          from: 'presentation/*.css',
+          to: '[name][ext]',
+        },
+        {
+          from: 'presentation/*.js',
+          to: '[name][ext]',
+        },
+      ],
     }),
   ],
 }; 

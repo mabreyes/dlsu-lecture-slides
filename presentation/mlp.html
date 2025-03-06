@@ -201,7 +201,7 @@
     const applySystemFont = () => {
       // Direct SVG element targeting with !important style
       const appleFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif";
-      
+
       // Apply to all text elements in SVG
       document.querySelectorAll('.mermaid svg text, .mermaid svg tspan').forEach(el => {
         el.style.fontFamily = appleFont + ' !important';
@@ -213,11 +213,11 @@
       document.querySelectorAll('.mermaid .label, .mermaid foreignObject, .mermaid foreignObject *').forEach(el => {
         el.style.fontFamily = appleFont + ' !important';
       });
-      
+
       // Create and inject a style element for stronger override
       const styleEl = document.createElement('style');
       styleEl.textContent = `
-        .mermaid text, .mermaid tspan, .mermaid .nodeLabel, .mermaid .edgeLabel, 
+        .mermaid text, .mermaid tspan, .mermaid .nodeLabel, .mermaid .edgeLabel,
         .mermaid foreignObject, .mermaid foreignObject div, .mermaid g div {
           font-family: ${appleFont} !important;
           font-weight: 400 !important;
@@ -231,7 +231,7 @@
       renderMermaidMath();
       applySystemFont();
     }, 1000);
-    
+
     // Run again after diagrams are fully loaded
     setTimeout(() => {
       renderMermaidMath();
