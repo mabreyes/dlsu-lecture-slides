@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>404 - Page Not Found &mdash; MLP Visualizer</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Preload resources to prevent FOUC -->
+    <link rel="preload" href="/css/styles.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" as="style">
+
+    <!-- Critical CSS to prevent flash of unstyled content -->
+    <style>
+        html { visibility: hidden; }
+        body { background-color: #f3f4f6; }
+        .navbar, .container, .navbar-logo, .main-content, footer { opacity: 0; }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+
+    <!-- Script to make content visible once everything is loaded -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.style.visibility = 'visible';
+            const elements = document.querySelectorAll('.navbar, .container, .navbar-logo, .main-content, footer');
+            elements.forEach(el => {
+                el.style.opacity = '1';
+                el.style.transition = 'opacity 0.3s ease-in-out';
+            });
+        });
+    </script>
+    
+    <link rel="stylesheet" href="/css/styles.css">
+    
+    <!-- Additional styles specific to error page -->
+    <style>
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            margin: 3rem auto;
+        }
+        
+        .error-code {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .error-description {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            color: var(--gray-600);
+        }
+        
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .home-link .material-icons-round {
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-logo">
+                MLP Visualizer
+            </a>
+            <div class="navbar-links">
+                <span class="navbar-text" style="color: var(--gray-500);">Interactive Demo by Marc Reyes</span>
+                <a href="/mlp.html" target="_blank" class="nav-link">
+                    <span class="material-icons-round">slideshow</span>
+                    View Slides
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="error-container">
+            <div class="error-code">404</div>
+            <h2 class="error-title">Page Not Found</h2>
+            <p class="error-description">
+                The page you are looking for might have been removed, had its name changed, 
+                or is temporarily unavailable.
+            </p>
+            <a href="/" class="home-link">
+                <span class="material-icons-round">home</span>
+                Return to Home
+            </a>
+        </div>
+        
+        <footer>
+            <p>Powered by <a href="https://www.tensorflow.org/js" target="_blank" rel="noopener noreferrer">TensorFlow.js</a> and <a href="https://d3js.org" target="_blank" rel="noopener noreferrer">D3.js</a>. Created by <a href="https://marcr.io" target="_blank" rel="noopener noreferrer">Marc Reyes</a>. Check out the source on <a href="https://github.com/mabreyes/dlsu-lecture-slides" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+        </footer>
+    </div>
+</body>
+</html> 

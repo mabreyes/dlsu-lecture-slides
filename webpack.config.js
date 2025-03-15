@@ -9,6 +9,7 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+    publicPath: '/',
   },
   devtool: 'inline-source-map',
   devServer: {
@@ -17,6 +18,11 @@ module.exports = {
       { directory: path.resolve(__dirname, 'presentation'), publicPath: '/presentation' },
     ],
     hot: true,
+    historyApiFallback: {
+      rewrites: [
+        { from: /./, to: '/404.html' }
+      ]
+    },
   },
   module: {
     rules: [
@@ -30,6 +36,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'MLP Visualizer',
       template: './src/index.html',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/404.html',
+      filename: '404.html',
+      inject: false
     }),
     new CopyPlugin({
       patterns: [
@@ -45,6 +56,10 @@ module.exports = {
           from: 'presentation/*.js',
           to: '[name][ext]',
         },
+        {
+          from: 'src/css',
+          to: 'css',
+        }
       ],
     }),
   ],
